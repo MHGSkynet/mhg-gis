@@ -1,0 +1,4 @@
+"ObservationDate","County","ObservationCount","UtilityWeight","ServicesWeight","ConsumablesWeight","UtilityImpact","ServicesImpact","ConsumablesImpact","2MReports","2MCheckins",
+2020-04-04,"DEFAULT",0,0,0,0,"U","U","U",0,0,
+2020-04-04,"Ingham",1,1,2,2,"A","M","M",1,0,
+2020-04-04,"Clinton",1,1,2,2,"A","M","M",1,0,
