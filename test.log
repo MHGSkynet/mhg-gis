@@ -1,0 +1,228 @@
+####
+#### mhgCovidDataFetch starting.
+####
+Alias var=MHGGIS_APPALIAS
+ARGS:Namespace(debug=True, detail=True, end='2020.03.28', ndays=0, start='2020.03.28', summary=True)
+DEBUG: detailCsvCleanup()
+DEBUG: detailCsvCleanup(cleanLoopNo=0)
+DEBUG: detailCsvCleanup(0,date=2020.03.28,file=E:/gis/mhg-gis/data/mhgCovidStatus-Detail-2020.03.28.csv)
+DEBUG: detailCsvCleanup(deleteFile=E:/gis/mhg-gis/data/mhgCovidStatus-Detail-2020.03.28.csv)
+DEBUG: fetchCoronaData.enter
+Fetching Data for 2020.03.28...
+DEBUG: fetchCoronaData.process sheet values
+DEBUG: args.startDate=2020.03.28, args.endDate=2020.03.28
+DEBUG: fetchCoronaData.date=3/27,site=Mike,county=Denver
+DEBUG: fetchCoronaData.date=3/27,site=Kurt,county=Kent
+DEBUG: fetchCoronaData.date=3/27,site=Rick,county=Kent
+DEBUG: fetchCoronaData.date=3/27,site=Steve,county=Kalamazoo
+DEBUG: fetchCoronaData.date=3/27,site=Reaper,county=New Mexico
+DEBUG: fetchCoronaData.date=3/27,site=RobIsCool,county=Houghton
+DEBUG: fetchCoronaData.date=3/27,site=Kurt,county=Wayne
+DEBUG: fetchCoronaData.date=3/27,site=Mike,county=Macomb
+DEBUG: fetchCoronaData.date=3/26,site=Kurt,county=Kent
+DEBUG: fetchCoronaData.date=3/26,site=Ian,county=
+DEBUG: fetchCoronaData.date=3/27,site=Shawn,county=Montcalm
+DEBUG: fetchCoronaData.date=3/27,site=Rob,county=Cheboygan
+DEBUG: fetchCoronaData.date=3/27,site=Dennis,county=Monroe
+DEBUG: fetchCoronaData.date=3/27,site=Shane,county=St Joeseph
+DEBUG: fetchCoronaData.date=3/27,site=Patrick,county=Marquette
+DEBUG: fetchCoronaData.date=3/28,site=Zorak,county=Wayne
+DEBUG: detailCSVOpen(isNew=True,file=E:/gis/mhg-gis/data/mhgCovidStatus-Detail-2020.03.28.csv)
+DEBUG: detailCSVWriteHeader
+DEBUG: detailCSVClose(date=None)
+DEBUG: detailCSVOpen(isNew=False,file=E:/gis/mhg-gis/data/mhgCovidStatus-Detail-2020.03.28.csv)
+DEBUG: detailCsvWrite("IntelDate","Site","County","UtilityImpact","ServicesImpact","ConsumablesImpact","2MCheckins","2MParticipate","HFCheckins","HFParticipate","Comments",)
+DEBUG: detailCsvWrite(2020.03.28,"Zorak","Wayne","M","M","S",1,1,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Kurt,county=Kent
+DEBUG: FetchAddStats1:(util:1,svc:2,cons:2,max:0)
+DEBUG: FetchAddStats2:(util:1,svc:2,cons:2,max:2)
+DEBUG: detailCsvWrite(2020.03.28,"Kurt","Kent","A","M","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=RobIsCool,county=Houghton
+DEBUG: detailCsvWrite(2020.03.28,"RobIsCool","Houghton","A","A","A",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Vern,county=Lenawee
+DEBUG: detailCsvWrite(2020.03.28,"Vern","Lenawee","A","A","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Gary,county=Montcalm
+DEBUG: detailCsvWrite(2020.03.28,"Gary","Montcalm","A","A","U",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Sean,county=Montcalm
+DEBUG: detailCsvWrite(2020.03.28,"Sean","Montcalm","A","A","A",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Larry,county=Oscoda
+DEBUG: detailCsvWrite(2020.03.28,"Larry","Oscoda","A","M","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Jeff,county=Wayne
+DEBUG: detailCsvWrite(2020.03.28,"Jeff","Wayne","S","S","S",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Rob,county=Cheboygan
+DEBUG: detailCsvWrite(2020.03.28,"Rob","Cheboygan","A","A","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Brad,county=Mason
+DEBUG: detailCsvWrite(2020.03.28,"Brad","Mason","A","A","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Joe,county=Kent
+DEBUG: FetchAddStats1:(util:1,svc:1,cons:2,max:2)
+DEBUG: FetchAddStats2:(util:1,svc:1,cons:2,max:2)
+DEBUG: detailCsvWrite(2020.03.28,"Joe","Kent","A","A","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=James,county=Allegan
+DEBUG: detailCsvWrite(2020.03.28,"James","Allegan","A","A","U",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Tesla,county=Massachussetts
+DEBUG: detailCsvWrite(2020.03.28,"Tesla","Massachussetts","","","",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Sammy,county=Kalamazoo
+DEBUG: detailCsvWrite(2020.03.28,"Sammy","Kalamazoo","A","A","A",1,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Dennis,county=Monroe
+DEBUG: detailCsvWrite(2020.03.28,"Dennis","Monroe","S","S","S",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Will,county=Ogemaw
+DEBUG: detailCsvWrite(2020.03.28,"Will","Ogemaw","A","A","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=3/28,site=Chaz,county=Gratiot
+DEBUG: detailCsvWrite(2020.03.28,"Chaz","Gratiot","A","A","M",0,0,0,0,"",)
+DEBUG: fetchCoronaData.date=4/3,site=Perry,county=Ingham
+DEBUG: fetchCoronaData.date=4/4,site=Perry,county=Ingham
+DEBUG: fetchCoronaData.date=2020/4/6,site=Perry,county=Clinton
+DEBUG: fetchCoronaData.date=4/6,site=Perry,county=Ingham
+DEBUG: fetchCoronaData.forLoopDone.matchCt=17
+DEBUG: detailCSVClose(date=2020.03.28)
+Fetch complete. 17 records retrieved.
+DEBUG: covidStats:{'IntelStartDate': None, 'IntelEndDate': None, 'IntelNDays': 0, 'StatusReports': 2, 'UtilitiesWeight': 2, 'ServicesWeight': 3, 'ConsumablesWeight': 4, '2M Checkins': 0, '2M Participate': 0, 'HF Checkins': 0, 'HF Participate': 0, 'OverallImpactScore': 0, 'MaxScore': 0, 'MaxImpact': 2, 'UtilitiesImpactScore': 0, 'ServicesImpactScore': 0, 'ConsumablesImpactScore': 0, 'OverallImpactCode': 'U', 'MaxScoreCode': 'U', 'MaxImpactCode': 'U', 'UtilitiesImpactCode': 'U', 'ServicesImpactCode': 'U', 'ConsumablesImpactCode': 'U', 'DailyCounts': {'2020.03.28': 2}}
+DEBUG: fetchCoronaData.exit rowCt=37,matchCt=17
+Summary data generating ...
+DEBUG: summaryCSVOpen(file=E:/gis/mhg-gis/data/mhgCovidStatus-Summary-2020.03.28.csv)
+DEBUG: summaryCSVClose
+Summary data complete. Stats recorded for 15 counties.
+DEBUG: mergeKmlData.enter
+KML Generating...
+DEBUG: mergeKmlData.readlines(13807 read)
+DEBUG: mergeKmlData.evalCounty(Alcona)
+DEBUG: mergeKmlData.evalCounty(Alger)
+DEBUG: mergeKmlData.evalCounty(Allegan)
+DEBUG: mergeKmlData.evalCounty(Alpena)
+DEBUG: mergeKmlData.evalCounty(Antrim)
+DEBUG: mergeKmlData.evalCounty(Arenac)
+DEBUG: mergeKmlData.evalCounty(Baraga)
+DEBUG: mergeKmlData.evalCounty(Barry)
+DEBUG: mergeKmlData.evalCounty(Bay)
+DEBUG: mergeKmlData.evalCounty(Benzie)
+DEBUG: mergeKmlData.evalCounty(Berrien)
+DEBUG: mergeKmlData.evalCounty(Branch)
+DEBUG: mergeKmlData.evalCounty(Calhoun)
+DEBUG: mergeKmlData.evalCounty(Cass)
+DEBUG: mergeKmlData.evalCounty(Charlevoix)
+DEBUG: mergeKmlData.evalCounty(Cheboygan)
+DEBUG: mergeKmlData.evalCounty(Chippewa)
+DEBUG: mergeKmlData.evalCounty(Clare)
+DEBUG: mergeKmlData.evalCounty(Clinton)
+DEBUG: mergeKmlData.evalCounty(Crawford)
+DEBUG: mergeKmlData.evalCounty(Delta)
+DEBUG: mergeKmlData.evalCounty(Dickinson)
+DEBUG: mergeKmlData.evalCounty(Eaton)
+DEBUG: mergeKmlData.evalCounty(Emmet)
+DEBUG: mergeKmlData.evalCounty(Genesee)
+DEBUG: mergeKmlData.evalCounty(Gladwin)
+DEBUG: mergeKmlData.evalCounty(Gogebic)
+DEBUG: mergeKmlData.evalCounty(Gratiot)
+DEBUG: mergeKmlData.evalCounty(Hillsdale)
+DEBUG: mergeKmlData.evalCounty(Houghton)
+DEBUG: mergeKmlData.evalCounty(Huron)
+DEBUG: mergeKmlData.evalCounty(Ingham)
+DEBUG: mergeKmlData.evalCounty(Ionia)
+DEBUG: mergeKmlData.evalCounty(Iosco)
+DEBUG: mergeKmlData.evalCounty(Iron)
+DEBUG: mergeKmlData.evalCounty(Isabella)
+DEBUG: mergeKmlData.evalCounty(Jackson)
+DEBUG: mergeKmlData.evalCounty(Kalamazoo)
+DEBUG: mergeKmlData.evalCounty(Kalkaska)
+DEBUG: mergeKmlData.evalCounty(Kent)
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="OBJECTID">41</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="FIPSCODE">081</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="FIPSNUM">81</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="LABEL">Kent County</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="TYPE">County</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="CNTY_CODE">081</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="SQKM">2256.75</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="SQMILES">871.332</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="ACRES">557649.046</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="VER">17A</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="LAYOUT">portrait</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="PENINSULA">lower</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="ShapeSTArea">4228600834.96875</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="ShapeSTLength">265682.235569446</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_DATE">2020.01.01</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_DATE">2020.01.01</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_DATE">2020.03.28</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_NDAYS">1</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_NDAYS">1</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_NDAYS">1</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_OVERALL">U</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_OVERALL">U</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_OVERALL">M</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_MAX">U</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_MAX">U</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_MAX">M</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_UTILITIES">U</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_UTILITIES">U</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_UTILITIES">A</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_SERVICES">U</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_SERVICES">U</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_SERVICES">M</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="STATUS_CONSUMABLES">U</SimpleData>
+DEBUG: Updating kmlLine=					<SimpleData name="STATUS_CONSUMABLES">U</SimpleData>
+DEBUG: Updated kmlLine=					<SimpleData name="STATUS_CONSUMABLES">M</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="CASES_NEW">0</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="CASES_TOTAL">0</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="DEATHS_NEW">0</SimpleData>
+DEBUG: Evaluating DataItem kmlLine=					<SimpleData name="DEATHS_TOTAL">0</SimpleData>
+DEBUG: mergeKmlData.evalCounty(Keweenaw)
+DEBUG: mergeKmlData.evalCounty(Lake)
+DEBUG: mergeKmlData.evalCounty(Lapeer)
+DEBUG: mergeKmlData.evalCounty(Leelanau)
+DEBUG: mergeKmlData.evalCounty(Lenawee)
+DEBUG: mergeKmlData.evalCounty(Livingston)
+DEBUG: mergeKmlData.evalCounty(Luce)
+DEBUG: mergeKmlData.evalCounty(Mackinac)
+DEBUG: mergeKmlData.evalCounty(Macomb)
+DEBUG: mergeKmlData.evalCounty(Manistee)
+DEBUG: mergeKmlData.evalCounty(Marquette)
+DEBUG: mergeKmlData.evalCounty(Mason)
+DEBUG: mergeKmlData.evalCounty(Mecosta)
+DEBUG: mergeKmlData.evalCounty(Menominee)
+DEBUG: mergeKmlData.evalCounty(Midland)
+DEBUG: mergeKmlData.evalCounty(Missaukee)
+DEBUG: mergeKmlData.evalCounty(Monroe)
+DEBUG: mergeKmlData.evalCounty(Montcalm)
+DEBUG: mergeKmlData.evalCounty(Montmorency)
+DEBUG: mergeKmlData.evalCounty(Muskegon)
+DEBUG: mergeKmlData.evalCounty(Newaygo)
+DEBUG: mergeKmlData.evalCounty(Oakland)
+DEBUG: mergeKmlData.evalCounty(Oceana)
+DEBUG: mergeKmlData.evalCounty(Ogemaw)
+DEBUG: mergeKmlData.evalCounty(Ontonagon)
+DEBUG: mergeKmlData.evalCounty(Osceola)
+DEBUG: mergeKmlData.evalCounty(Oscoda)
+DEBUG: mergeKmlData.evalCounty(Otsego)
+DEBUG: mergeKmlData.evalCounty(Ottawa)
+DEBUG: mergeKmlData.evalCounty(Roscommon)
+DEBUG: mergeKmlData.evalCounty(Saginaw)
+DEBUG: mergeKmlData.evalCounty(Sanilac)
+DEBUG: mergeKmlData.evalCounty(Schoolcraft)
+DEBUG: mergeKmlData.evalCounty(Shiawassee)
+DEBUG: mergeKmlData.evalCounty(Tuscola)
+DEBUG: mergeKmlData.evalCounty(Washtenaw)
+DEBUG: mergeKmlData.evalCounty(Wayne)
+DEBUG: mergeKmlData.evalCounty(Wexford)
+DEBUG: statusKmlCreate.Enter(E:/gis/mhg-gis/output/mhgCovidStatus-2020.03.28.kml)
+DEBUG: statusKmlOpen(E:/gis/mhg-gis/output/mhgCovidStatus-2020.03.28.kml)
+DEBUG: statusKmlClose
+DEBUG: statusKmlCreate.Enter(E:/gis/mhg-gis/data/mhgCovidStatus.kml)
+DEBUG: statusKmlOpen(E:/gis/mhg-gis/data/mhgCovidStatus.kml)
+DEBUG: statusKmlClose
+KML Generation complete. File=E:/gis/mhg-gis/output/mhgCovidStatus-2020.03.28.kml
+DEBUG: mergeKmlData.exit
+####
+#### mhgCovidDataFetch complete.
+####
+mhgCovidFetch::MGHMHGGIS_FILTER_DATE=
+mhgCovidStatus::MGHMHGGIS_FILTER_DATE=
+mhgCovidReport::MGHMHGGIS_FILTER_DATE=
+mhgCovidReport::MGHMHGGIS_FILTER_DATE=
+####
+#### mhgCovidStatus start
+####
+PACKAGE FOLDER=E:/gis/mhg-gis/
+QGIS FOLDER=C:\PROGRA~1\QGIS3~1.10
+DEBUG Create project
+DEBUG Create vector layer(file=E:/gis/mhg-gis/data/mhgCovidStatus.kml)
+DEBUG Add vector layer to project
+Terminate batch job (Y/N)? Terminate batch job (Y/N)? 

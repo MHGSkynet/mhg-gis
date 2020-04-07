@@ -40,8 +40,35 @@
 #                           libpng warning: iCCP: known incorrect sRGB profile
 #                           libpng warning: iCCP: known incorrect sRGB profile
 #                           ERROR 6: The JPEG driver does not support update access to existing datasets.
+#  
+#  Usage:
+# 
+#       mhgCovidStatus.bat [-h] [--start START] [--end END] [--ndays [NDAYS]] [--nodetail] [--nosummary] [--debug]
+# 
+#       optional arguments:
+#           -h, --help       show this help message and exit
+#           --start START    Beginning date of range to select data by
+#           --end END        End date of range to select data by
+#           --ndays [NDAYS]  Number of days from begin date to select data by
+#           --nodetail       Disables capture of detail to daily CSV files
+#           --nosummary      Disables generation of summary info CSV file
+#           --debug          Whether to barf debug info
+# 
+#       Note:
+#           dates may be entered mm/dd, mm/dd/yyyy or yyyy.mm.dd
+#           nDays may be positive or negative.
+# 
+#       Examples:
+#           mhgCovidStatus.bat                                  # Run for today
+#           mhgCovidStatus.bat --start 2020.04.03               # Run for specific date
+#           mhgCovidStatus.bat --start 04/03 --end 04/06        # Run for a date range
+#           mhgCovidStatus.bat --start 04/03 --ndays 7          # Run for week following (and including) start date given
+#           mhgCovidStatus.bat --start 04/03/2020 --ndays -7    # Run for week prior to (and including) start date given
+#           mhgCovidStatus.bat --ndays -7                       # Run for the past week
+#
 #
 # Date			Version		Author			Description
+# 2020.04.06    01.03       SquintMHG       Rework scripts to classes, add command args
 # 2020.03.23    01.00       SquintMHG       Initial version
 # ---------------------------------------------------------------------------------------------
 

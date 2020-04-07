@@ -8,7 +8,7 @@
 ::     Batch file to run mhgCovidStatus.py QGIS python
 :: 
 :: Usage
-::     mhgCovidStatus.bat
+::     mhgCovidStatus.bat [date]
 ::  
 ::
 :: Copyright
@@ -30,10 +30,6 @@ if "%MHGGIS_ROOT%"=="" (
 	exit 1
 )
 
-if not "%1" == "" (
-	set MHGGIS_FILTER_DATE=%1
-)
-
 set MHGGIS_REPORT_FOLDER=%MHGGIS_ROOT%\covidReport
 
-"%MHGGIS_REPORT_FOLDER%\python-qgis-headless.bat" "%MHGGIS_REPORT_FOLDER%\mhgCovidStatus.py"
+"%MHGGIS_REPORT_FOLDER%\python-qgis-headless.bat" "%MHGGIS_REPORT_FOLDER%\mhgCovidReport.py" %*

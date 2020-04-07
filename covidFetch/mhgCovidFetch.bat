@@ -5,12 +5,32 @@
 ::
 :: Description
 ::
-::     Batch file to run mhgCovidDataFetch.py application 
+::     Batch file to run mhgCovidFetch.py application 
 :: 
 :: Usage
-::     mhgCovidFetch.bat [filter-date]
 ::
-::		filter-date			Date to retrieve data for (yyyy.mm.dd format), default=today.
+::      mhgCovidFetch.bat [-h] [--start START] [--end END] [--ndays [NDAYS]] [--nodetail] [--nosummary] [--debug]
+::
+::      optional arguments:
+::          -h, --help       show this help message and exit
+::          --start START    Beginning date of range to select data by
+::          --end END        End date of range to select data by
+::          --ndays [NDAYS]  Number of days from begin date to select data by
+::          --nodetail       Disables capture of detail to daily CSV files
+::          --nosummary      Disables generation of daily summary info CSV file
+::          --debug          Whether to barf debug info
+::
+::      Note:
+::          dates may be entered mm/dd, mm/dd/yyyy or yyyy.mm.dd
+::          nDays may be positive or negative.
+::
+::      Examples:
+::          mhgCovidFetch.bat                                  # Run for today
+::          mhgCovidFetch.bat --start 2020.04.03               # Run for specific date
+::          mhgCovidFetch.bat --start 04/03 --end 04/06        # Run for a date range
+::          mhgCovidFetch.bat --start 04/03 --ndays 7          # Run for week following start date given
+::          mhgCovidFetch.bat --start 04/03/2020 --ndays -7    # Run for week prior to start date given
+::          mhgCovidFetch.bat --ndays -7                       # Run for the past week
 ::
 :: Copyright
 ::
@@ -20,6 +40,7 @@
 ::						and any other use prohibited.
 ::  
 :: Date        Version     Author          Description
+:: 2020.04.06  01.03       SquintMHG       Add command line arguments
 :: 2020.04.04  01.02       SquintMHG       Fix folders with spaces
 :: 2020.03.26  01.00       SquintMHG       Initial version
 :: ---------------------------------------------------------------------------------------------
@@ -31,10 +52,14 @@ if "%MHGGIS_ROOT%"=="" (
 	exit 1
 )
 
-if not "%1" == "" (
-	set MHGGIS_FILTER_DATE=%1
+if "%MHGGIS_APPALIAS%"=="" (
+	set MHGGIS_APPALIAS=mhgCovidFetch.bat
 )
 
-python "%MHGGIS_ROOT%\covidFetch\mhgCovidDataFetch.py"
+python "%MHGGIS_ROOT%\covidFetch\mhgCovidDataFetch.py" %*
+
+echo mhgCovidFetch::MHGGIS_FILTER_DATE=%MHGGIS_FILTER_DATE%
+
+set MHGGIS_APPALIAS=
 
 exit /B %ERRORLEVEL%
