@@ -1,7 +1,21 @@
 #
 # ---------------------------------------------------------------------------------------------
-# mhgCovidStatus.py
-#
+# mhgCovidStatus.py                         .
+#                                        ,'/ \`.                      :   <">    I am a virus,
+# Description                           |\/___\/|                     :   _T_    please copy me. 
+#                                       \'\   /`/                     :   /Y\ 
+#    Covid Status Reporting              `.\ /,'                                                   
+#    Tool                                   |                                                    
+#                                           |                                                      
+#                                          |=|                                                    
+#                                     /\  ,|=|.  /\                                                
+#                                 ,'`.  \/ |=| \/  ,'`.                                           
+#                               ,'    `.|\ `-' /|,'    `.                                        
+#                             ,'   .-._ \ `---' / _,-.   `.                                        
+#                                ,'    `-`-._,-'-'    `.
+#                               '                       `
+#                             
+#                    
 # Description
 #
 #	Get data from spreadsheet and render as chart. 	
@@ -22,22 +36,14 @@
 # 2020.03.27	01.00		SquintMHG		Initial version
 # ---------------------------------------------------------------------------------------------
 
-from __future__ import print_function
-import copy
 import os
-import os.path
-import re
 import sys
-from pathlib import Path
-from datetime import datetime
-from datetime import timedelta
-
-from mhgDateParse import DateParser
-from mhgDateParse import DateParseResult
 
 import mhgAppSettings
 import mhgCovidDataReader
 import mhgDetailWriter
+import mhgKmlWriter
+import mhgSummaryWriter
 import mhgException
 import mhgUtility
 
@@ -66,7 +72,7 @@ def appExit(err=None):
 def main():
 
 	# App Start
-	print ("####\n#### {} starting.\n####".format(PROGNM))
+	print ("####\n#### {} starting.\n####".format(AppSettings.PROGNM))
 
 	# Get Application settings (environment info and command args). Retain a reference to command arg options for convenience
 	try:
@@ -78,23 +84,36 @@ def main():
 	dataReader = CovidDataReader()
 	fetchOk = dataReader.FetchCoronaData():
 	if not fetchOk: 
-		appExit(UserError('No records retrieved from sheet.',ERR_FETCHFAIL))
+		appExit(UserError('No records retrieved from sheet.',AppError.ERR_FETCHFAIL))
 		
-	# Generate Output
+	# Generate Output CSVs and KML from State County stats
 	try:
 		# Write Detail
 		if _appOptions.captureDetail(): DetailWriter.WriteStatusRows(dataReader.covidSheet().statusRowsFiltered())
 		
 		# Write Summary
-		if _appOptions.generateSummary(): SummaryWriter.WriteCountyStats(dataReader.countyStats())
+		if _appOptions.generateSummary(): SummaryWriter.WriteStateCountyStats(dataReader.stateData())
 
-		mergeKmlData()
+		# Write KML
+		KmlWriter.WriteStateCountyStats(dataReader.stateData())
+
 	except EnvironmentError as err:
+		appExit(err)
+
+	# Remojinate generated KML into QGIS Project, then barf to PDF and JPG
+	try:
+		gisWriter = GisWriter()														# Fire up GIS Writer
+		gisWriter.GenerateProject()													# Create a GIS project base on generated KML
+		if _appOptions.generateProject(): 	gisWriter.SaveProject()					# Save project, if needed.
+		if _appOptions.generatePDF(): 		gisWriter.GeneratePdf()					# Write to PDF, if needed.
+		if _appOptions.generateImage(): 	gisWriter.GenerateImage()				# Write to JPG image, if needed.
+		gisWriter.Cleanup()															# Shut down GIS Writer
+
+	except (RenderError,EnvironmentError) as err:
 		appExit(err)
 
 	# App Exit
 	appExit()
-
 
 if __name__ == '__main__':
 	main()

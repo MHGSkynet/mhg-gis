@@ -17,14 +17,15 @@
 # 2020.04.07	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import sys
 
 class DataField(object):
 
 	# Data Type Constants (public)
-	DTYPE_NUMERIC		= 'numeric'
-	DTYPE_TEXT			= 'text'
-	DTYPE_DATE			= 'date'
+	DTYPE_NUMERIC		= 'numeric'								# Numeric data type
+	DTYPE_TEXT			= 'text'								# Text data type
+	DTYPE_DATE			= 'date'								# Date data type
 
 	# Field properties (private)
 	_field_id			= None									# Field ID
@@ -35,54 +36,59 @@ class DataField(object):
 	_source_id			= None									# Field Source ID
 
 	# Constructor
-    def __init__(self,fldid=None,dtype=CsvField.DTYPE_TEXT,headertext="",value=None,colNo=None,srcid=None):
+    def __init__(self,fldid=None,dtype=CsvField.DTYPE_TEXT,header="",value=None,colNo=None,srcid=None):
 
-		self._field_id				= fldid
-		self._field_dtype			= dtype
-		self._field_header_text		= headertext
-		self._field_value			= value
-		self._column_number			= colNo
-		self._source_id				= srcid
+		self._field_id				= fldid						# Initialize Field ID
+		self._field_dtype			= dtype						# Initialize Field data type
+		self._field_header_text		= header					# Initialize Field header text
+		self._field_value			= value						# Initialize Field value
+		self._column_number			= colNo						# Initialize Field Column Number
+		self._source_id				= srcid						# Initialize Field Source ID
+	
+	#
+	# Methods (public)
+	#
+	def AddValue(self,value):									# Add a value to this field's value
+		self._field_value = self._field_value + value
 	
 	#
 	# Property getters (public)
 	#
 	def fieldId(self):
-		return self._field_id
+		return copy.deepcopy(self._field_id)
 		
 	def dataType(self):
-		return self._field_dtype
+		return copy.deepcopy(self._field_dtype)
 		
 	def headerText(self):
-		return self._field_header_text
+		return copy.deepcopy(self._field_header_text)
 		
 	def sourceId(self):
-		return self._source_id
+		return copy.deepcopy(self._source_id)
 		
 	def columnNo(self):
-		return self._column_number
+		return copy.deepcopy(self._column_number)
 
 	def value(self):
-		return self._field_value
+		return copy.deepcopy(self._field_value)
 		
 	#
 	# Property setters (public)
 	#
 	def SetFieldId(self,id):
-		self._field_id = id
+		self._field_id = copy.deepcopy(id)
 		
 	def SetDataType(self,dtype):
-		self._field_dtype = dtype
+		self._field_dtype = copy.deepcopy(dtype)
 		
 	def SetHeaderText(self,headerText):
-		self._field_header_text = headerText
+		self._field_header_text = copy.deepcopy(headerText)
 		
 	def SetSourceId(self,srcId):
-		self._source_id = srcId
+		self._source_id = copy.deepcopy(srcId)
 		
 	def SetColumnNo(self,colNo):
-		self._column_number = colNo
+		self._column_number = copy.deepcopy(colNo)
 	
 	def SetValue(self,value):
-		self._field_value = value
-	
+		self._field_value = copy.deepcopy(value)

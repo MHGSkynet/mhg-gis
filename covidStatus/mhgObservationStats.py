@@ -17,33 +17,37 @@
 # 2020.04.10	02.00		SquintMHG		Rewrite as app
 # ---------------------------------------------------------------------------------------------
 
+# MHGLIB includes
 import mhgImpact
 
 class ObservationStats(object):
 
 	# Statistics Constants (public)
-	STAT_STATUS_START_DATE			= 'IntelStartDate'									# End date of observations
+	STAT_STATUS_START_DATE			= 'IntelStartDate'									# Start date of observations
 	STAT_STATUS_END_DATE			= 'IntelEndDate'									# End date of observations
 	STAT_OBSERVE_NDAYS				= 'OvserveNDays'									# Number of days having observations
 	STAT_OBSERVE_COUNT				= 'ObserveCount'									# Number of observations
+
 	STAT_UTILITIES_WEIGHT			= 'UtilitiesWeight'									# Total utility impact weight
 	STAT_SERVICES_WEIGHT			= 'ServicesWeight'									# Total services impact weight
 	STAT_CONSUMABLES_WEIGHT			= 'ConsumablesWeight'								# Total consumables impact weight
-	STAT_2M_CHECKINS				= '2M Checkins'										# Total 2M check-ins by net control
-	STAT_2M_PARTICIPATE				= '2M Participate'									# Total 2M nets participated in
-	STAT_HF_CHECKINS				= 'HF Checkins'										# Total HF check-ins by net control
-	STAT_HF_PARTICIPATE				= 'HF Participate'									# Total HF nets participated in
 
 	STAT_UTILITIES_SCORE			= 'UtilitiesScore'									# Utilities Impact Score
 	STAT_SERVICES_SCORE				= 'ServicesScore'									# Services Impact Score
 	STAT_CONSUMABLES_SCORE			= 'ConsumablesScore'								# Consumables Impact Score
 	STAT_OVERALL_SCORE				= 'OverallScore'									# Overall (Average-ish) Impact Score
 	STAT_MAX_SCORE					= 'MaxScore'										# Maximum Impact Score
+
 	STAT_UTILITIES_CODE				= 'UtilitiesCode'									# Utilities Impact Code
 	STAT_SERVICES_CODE				= 'ServicesCode'									# Services Impact Code
 	STAT_CONSUMABLES_CODE			= 'ConsumablesCode'									# Consumables Impact Code
 	STAT_OVERALL_CODE				= 'OverallCode'										# Overall Impact Code
 	STAT_MAX_CODE					= 'MaxCode'											# Maximum Impact Code
+
+	STAT_2M_CHECKINS				= '2M Checkins'										# Total 2M check-ins reported by net control
+	STAT_2M_PARTICIPATE				= '2M Participate'									# Total 2M nets participated in
+	STAT_HF_CHECKINS				= 'HF Checkins'										# Total HF check-ins reported by net control
+	STAT_HF_PARTICIPATE				= 'HF Participate'									# Total HF nets participated in
 
 	# Properties (private)
 	_statusStartDate				= None
@@ -57,6 +61,9 @@ class ObservationStats(object):
 	_participate2M					= None
 	_checkinsHF						= None
 	_participateHF					= None
+	
+	_dailyCounts					= {}
+	_fieldData						= []
 	
 	# Constructor
     def __init__(self):
@@ -78,6 +85,10 @@ class ObservationStats(object):
 		self._participate2M			= DataField(self.STAT_2M_PARTICIPATE,		DataField.DTYPE_NUMERIC,	'2MParticipate',		0)
 		self._checkinsHF			= DataField(self.STAT_HF_CHECKINS,			DataField.DTYPE_NUMERIC,	'HFCheckins',			0)
 		self._participateHF			= DataField(self.STAT_HF_PARTICIPATE,		DataField.DTYPE_NUMERIC,	'HFParticipate',		0)
+		dailyCounts					= {}
+		
+	def _SetFieldData(self):													# Create list of DataField items from properties. (archetype)
+		pass
 	
 	#
 	# Methods (private)
@@ -86,6 +97,13 @@ class ObservationStats(object):
 	#
 	# Methods (public)
 	#
+	def FieldFromId(self,fieldIdentifier):
+		statusField = None
+		for field in self.dataFields()
+			if field.fieldId() == fieldIdentifier: statusField = field
+			break
+
+		return statusField
 
 	#
 	# Property Getters (public)
@@ -96,39 +114,37 @@ class ObservationStats(object):
 	def endDate(self):
 		return self._statusEndDate
 		
-	def stateName(self):
-		return self._county
-		
-	def statusNdays(self):
+	def observationDays(self):
 		return self._statusNDays
 		
-	def restartDate(self):
+	def observationCount(self):
 		return self._statusReportCount
 		
-	def startDate(self):
+	def utilityWeight(self):
 		return self._utilityWeight
 		
-	def startDate(self):
+	def servicesWeight(self):
 		return self._servicesWeight
 		
-	def startDate(self):
+	def consumablesWeight(self):
 		return self._consumablesWeight
 		
-	def startDate(self):
+	def checkins2M(self):
 		return self._checkins2M
 		
-	def startDate(self):
+	def participate2M(self):
 		return self._participate2M
 		
-	def startDate(self):
+	def checkinsHF(self):
 		return self._checkinsHF
 		
-	def startDate(self):
+	def participateHF(self):
 		return self._participateHF
 
-	def startDate(self):
-		return self._dailyCounts
-		
+	def dataFields(self):
+		self._SetFieldData()
+		return self._fieldData
+
 	#
 	# Property Getters, Calculated (public)
 	#

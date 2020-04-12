@@ -1,12 +1,26 @@
 #
 # ---------------------------------------------------------------------------------------------
-# mhgException.py
-#
-# Description
-#
-# 	Application exception handlers
-#
-# Copyright
+# mhgException.py                              ...                            
+#                                             ;::::;                           
+# Description                               ;::::; :;                          
+#                                         ;:::::'   :;                         
+#   Application Exceptions               ;:::::;     ;.                        
+#                                       ,:::::'  404  ;           OOO\         
+#                                       ::::::;       ;          OOOOO\        
+#                                       ;:::::;       ;         OOOOOOOO       
+#                                      ,;::::::;     ;'         / OOOOOOO      
+#                                    ;:::::::::`. ,,,;.        /  / DOOOOOO    
+#                                  .';:::::::::::::::::;,     /  /     DOOOO   
+#                                 ,::::::;::::::;;;;::::;,   /  /        DOOO  
+#                                ;`::::::`'::::::;;;::::: ,#/  /          DOOO 
+#                                :`:::::::`;::::::;;::: ;::#  /            DOOO
+#                                ::`:::::::`;:::::::: ;::::# /              DOO
+#                                `:`:::::::`;:::::: ;::::::#/               DOO
+#                                 :::`:::::::`;; ;:::::::::##                OO
+#                                 ::::`:::::::`;::::::::;:::#                OO
+#                                 `:::::`::::::::::::;'`:;::#                O 
+#                                  `:::::`::::::::;' /  / `:#                  
+# Copyright                         ::::::`:::::;'  /  /   `#              
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
 #						non profit conservative organizations and individuals to use in support
@@ -17,6 +31,7 @@
 # 2020.04.06	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import sys
 
 #
@@ -67,6 +82,8 @@ class AppError(Exception):														# Base class for application exceptions
 	ERR_BADCMD			= 3														# Bad command argument
 	ERR_BADFILTER		= 4
 	ERR_FETCHFAIL		= 5														# Fetch data failure
+	ERR_BADRENDER		= 6														# Problem rendering KML thru QGIS
+
 	
 	# Properties (private)
 	_err_ident			= { ERR_NONE:		'SUCCESS',
@@ -75,7 +92,8 @@ class AppError(Exception):														# Base class for application exceptions
 							ERR_BADCMD:		'BADCMD',
 							ERR_BADFILTER:	'BADFILTER'
 							ERR_FETCHFAIL:	'FETCHFAIL',
-							ERR_USERFAIL:	'USERFAIL'	}
+							ERR_USERFAIL:	'USERFAIL',
+							ERR_BADRENDER:	'BADRENDER' }
 							
 	_err_number			= ERR_ERROR
 	_err_severity 		= Severity(Severity.FATAL)
@@ -116,6 +134,14 @@ class EnvironmentError(AppError):												# Environment Error
 
     # Constructor
     def __init__(self, message, errNo=AppError.ERR_BADENV):
+        self._message		= message
+		self._err_number	= errNo
+		self._err_severity	= Severity(Severity.FATAL)
+
+class RenderError(AppError):													# GIS Rendering Error
+
+    # Constructor
+    def __init__(self, message, errNo=AppError.ERR_BADRENDER):
         self._message		= message
 		self._err_number	= errNo
 		self._err_severity	= Severity(Severity.FATAL)

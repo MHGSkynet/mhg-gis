@@ -14,25 +14,31 @@
 #						and any other use prohibited.
 #
 # Date			Version		Author			Description
-# 2020.04.07	01.03		SquintMHG		New Module
+# 2020.04.07	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
+import copy
 import sys
+
+# MHGLIB includes
 from mhgDateParse import DateParser
 from mhgDateParse import DateParseResult
 import mhgCsvField
 
-class CsvWriter(object):										# Base CSV Writing Objec
+class CsvWriter(object):										# Base class for CSV writing
 
 	# Properties (private)
-	_csvFH				= None									# File Handle for IO
+	_fhCsv				= None									# File Handle for IO
 	_csv_field_sep		= ','									# CSV field separator
 	_csv_field_quote	= '"'									# CSV field quote bounds character
+	_csv_file_spec		= None									# File spec of open csv
 
     def __init__(self):
-		_csvFH				= None								# Initialize File Handle for IO
+		_fhCsv				= None								# Initialize File Handle for IO
 		_csv_field_sep		= ','								# Initialize CSV field separator
 		_csv_field_quote	= '"'								# Initialize CSV field quote bounds character
+		_csv_file_spec		= None								# Initialize File spec CSV
 
 	#
 	# Methods (private) 
@@ -46,21 +52,39 @@ class CsvWriter(object):										# Base CSV Writing Objec
 		return outText
 
 	#
+	# Methods (public)
+	# 
+	def Write(self,text):										# Write text to CSV
+		barfd("CsvWriter.Write({})".format(text))
+		self._fhCsv.write(text + '\n')
+		return True
+
+	def Close(self):											# Close CSV
+		barfd("CsvWriter.Close()")
+		self._fhCsv.close()
+		self._fhCsv = None
+		return True
+
+	#
 	# Property Getters (public)
 	#
 	def fieldSep(self):
-		return self._csv_field_sep
+		return copy.deepcopy(self._csv_field_sep)
 		
 	def fieldQuote(self):
-		return self._csv_field_quote
+		return copy.deepcopy(self._csv_field_quote)
+		
+	def fileSpec(self):
+		return copy.deepcopy(self._csv_file_spec)
 
 	#
 	# Property Setters (public)
 	#
 	def SetFieldSep(self,separator):
-		self._csv_field_sep = separator
+		self._csv_field_sep = copy.deepcopy(separator)
 	
 	def SetFieldQuote(self,quotechar):
-		self._csv_field_quote = quotechar
+		self._csv_field_quote = copy.deepcopy(quotechar)
 		
-
+	def SetFileSpec(self,filespec):
+		self._csv_file_spec = copy.deepcopy(filespec)

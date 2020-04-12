@@ -6,21 +6,49 @@
 #
 # 	Class for working with source google spreadsheet
 #
+#                       .------..                                _------__--___.__.
+#                    /            \_                           /            `  `    \
+#                  /                \                         |.                     \
+#                 /                   \                       \                       |
+#                /    .--._    .---.   |                       \                      |
+#                |  /      -__-     \   |                        ~-/--`-`-`-\         |
+#                | |                |  |                         |          \        |
+#                 ||                  ||                         |            |       |
+#                 ||     ,_   _.      || Hey Beavis,             |            |       |
+#                 ||      e   e      ||   smell my finger!       |   _--    |       |
+#                  ||     _  |_      ||   Heh, HeH!!            _| =-.    |.-.    |
+#                 @|     (o\_/o)     |@                          o|/o/       _.   |
+#                   |     _____     |              No way,       /  ~          \ |
+#                    \ ( /uuuuu\ ) /               ass wipe!!  (/___@)  ___~    |
+#                     \  `====='  /  That's your                   |_===~~~.`    |
+#                      \  -___-  /    mom, Bruh!                _ ______.--~     |
+#                       |       |            //                 \________       |
+#                       /-_____-\       .  _//_                          \      |
+#                     /           \     \\/////                        __/-___-- -_
+#                   /               \    \   /                        /            __\
+#                  /__|  AC / DC  |__\   / /                          -| Metallica|| |
+#                  | ||           |\ \  / /                           ||          || |
+#                  | ||           | \ \/ /                            ||          || |
+#
 # Copyright
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
 #						non profit conservative organizations and individuals to use in support
 #						of American freedom and the constitution. All other rights are reserved,
 #						and any other use prohibited.
+# TODO
+#	Reject and report bad data; county, date, etc.
 #
 # Date			Version		Author			Description
 # 2020.04.07	02.00		SquintMHG		New module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import os
 import os.path
 from pathlib import Path
 
+# MHGLIB includes
 import mhgAppSettings
 import mhgDataField
 import mhgUtility

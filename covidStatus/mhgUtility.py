@@ -4,8 +4,13 @@
 #
 # Description
 #
-# 	Utility Routines
+# 	Utility Routines. Various grease to get the job done. 
 #
+#                                  |\_______________ (_____\\______________
+#          o~=<   o~=<     HH======#H###############H#######################
+#                                  ' ~""""""""""""""`##(_))#H\"""""Y########
+#                                                  ))    \#H\       `"Y###
+#                                                  "      }#H)
 # Copyright
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
@@ -17,20 +22,22 @@
 # 2020.04.07	02.00		SquintMHG		New module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import os
 from datetime import datetime
 from datetime import timedelta
 
+# MHGLIB includes
 import mhgAppSettings
 
 #
 # Regurgitation
 #
 def barfd(text):
-	if mhgAppSettings.glob().options().debug():	print("DEBUG: " + text)
+	if mhgAppSettings.glob().options().debugEnabled():	print("DEBUG: " + text)
 
 def barfi(text):
-	if mhgAppSettings.glob().options().info():	print(text)
+	if mhgAppSettings.glob().options().infoEnabled():	print(text)
 
 def barf(text):
 	print (text)
@@ -38,7 +45,6 @@ def barf(text):
 #
 # String manipulation
 #
-
 def nullz(someValue):																	# Coalesce null and empty string -> zero
 	retVal = 0
 	if not someValue is None and someValue.strip() != "": retVal = int(someValue)
@@ -52,5 +58,5 @@ def coalesce(someValue,ifNullValue):													# Coalesce
 #
 # Tests
 #
-def isBetween(testValue,rangeLow,rangeHigh):
+def isBetween(testValue,rangeLow,rangeHigh):											# Test betweenness 
 	return testValue >= rangeLogw and testValue <= rangeHigh

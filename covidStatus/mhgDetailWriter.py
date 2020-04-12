@@ -7,6 +7,12 @@
 # 	Class for writing Detail info to CSV(s).  Data for separate dates are written to separate
 #	files.
 #
+#
+#             !      /-----\============@                           _,_
+#             |_____/_______\_____                            _____/_o_\_____
+#            /____________________\                          (==(/_______\)==)
+#             \+__+__+__+__+__+__*/                           \==\/     \/==/
+#
 # Copyright
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
@@ -18,27 +24,26 @@
 # 2020.04.08	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import sys
+
+# MHGLIB includes
 import mhgCommandArgs
 import mhgCsvWriter
 
-class DetailWriter(CsvWriter):									# Summary CSV Writer
+class DetailWriter(CsvWriter):												# Summary CSV Writer
 
 	# Properties (private)
-	_fhDetailCSV							= None				# Detail CSV file handle
-	_detailCSVDateYmd						= None				# Date of current open CSV file
-	_detailCsvSpec							= None				# File spec of open Detail CSV
+	_detailDateYmd						= None								# Date of current open CSV file
 
 	# Constructor
     def __init__(self):
-		_fhDetailCSV						= None				# Initialize detail CSV file handle
-		_detailCSVDateYmd					= None				# Initialize date of current open CSV file
-		_detailCsvSpec						= None				# File spec of open Detail CSV
+		_detailDateYmd					= None								# Initialize date of current open CSV file
 
 	#
 	# Methods (public)
 	# 
-	def Cleanup(self):																# Delete any existing output CSV files for date range being run
+	def Cleanup(self):														# Delete any existing output CSV files for date range being run
 		barfd("DetailWriter.Cleanup()")
 		detailStartTS = AppSettings.glob().options().startDateTS()
 		detailDateTS = detailStartTS
@@ -47,61 +52,58 @@ class DetailWriter(CsvWriter):									# Summary CSV Writer
 		for dayNo in range(AppSettings.glob().options().nDays()):
 			barfd("DetailWriter.Cleanup(cleanLoop.dayNo={})".format(dayNo))
 			detailDateYmd = detailDateTS.strftime(AppSettings.FORMAT_YMD)
-			self._detailCsvSpec = AppSettings.glob().detailCsvTemplate().replace(AppSettings.TEMPLATE_DATE_TOKEN,detailDateYmd)
-			barfd("DetailWriter.Cleanup(dayNo={},date={},file={})".format(dayNo,detailDateYmd,self._detailCsvSpec))
-			if os.path.isfile(self._detailCsvSpec):
-				barfd("DetailWriter.Cleanup(deleteFile={})".format(self._detailCsvSpec))
-				os.remove(self._detailCsvSpec)
+			self.SetFileSpec( AppSettings.glob().detailCsvTemplate().replace(AppSettings.TEMPLATE_DATE_TOKEN,detailDateYmd) )
+			barfd("DetailWriter.Cleanup(dayNo={},date={},file={})".format(dayNo,detailDateYmd,self.fileSpec())
+			if os.path.isfile(self.fileSpec()):
+				barfd("DetailWriter.Cleanup(deleteFile={})".format(self.fileSpec())
+				os.remove(self.fileSpec())
 			detailDateTS = detailDateTS + deltaOneDay
 
 		return True
 
-	def Close(self):																# Close Detail CSV
-		barfd("DetailWriter.Close(date={})".format(self._detailCSVDateYmd))
-		self._fhDetailCSV.close()
-		self._fhDetailCSV = None
-		self._detailCSVDateYmd = None
+	def Close(self):														# Close Detail CSV
+		barfd("DetailWriter.Close(date={})".format(self._detailDateYmd))
+		super(DetailWrite, self).Close()
+		self._detailDateYmd = None
 		return True
 
-	def Open(self,statRow):															# Open Detail CSV for output
-
-		if not self._fhDetailCSV is None and statRow.intelDate() != self._detailCSVDateYmd:
+	def Open(self,statRow):													# Open Detail CSV for output
+		if not self._fhCsv is None and statRow.intelDate() != self._detailDateYmd:
 			self.Close()
 
-		if self._fhDetailCSV is None:
-			self._detailCsvSpec = AppSettings.glob().detailCsvTemplate.replace(AppSettings.TEMPLATE_DATE_TOKEN,statRow.intelDate())
-			isNew = not os.path.isfile(self._detailCsvSpec)
-			barfd("DetailWriter.Open(isNew={},file={})".format(isNew,self._detailCsvSpec))
-			fhDetailCSV = open(self._detailCsvSpec, 'a')
-			if fhDetailCSV is None:
-				raise EnvironmentError("Can't open output detailCsv ({})".format(self._detailCsvSpec)))
-			if isNew: detailCsvWriteHeader(statRow)
+		if self._fhCsv is None:
+			self.SetFileSpec( AppSettings.glob().detailCsvTemplate.replace(AppSettings.TEMPLATE_DATE_TOKEN,statRow.intelDate()) )
+			isNew = not os.path.isfile(self.fileSpec())
+			barfd("DetailWriter.Open(isNew={},file={})".format(isNew,self.fileSpec()))
+			self._fhCsv = open(self.fileSpec(), 'a')
+			if self._fhCsv is None:
+				raise EnvironmentError("Can't open output Detail CSV ({})".format(self.fileSpec()))
+			if isNew: self.WriteHeader(statRow)
 
-		detailCSVDateYmd = statRow.intelDate()
+		self._detailDateYmd = statRow.intelDate()
 		return True
 
 	def WriteHeader(self,statRow):											# Write Detail CSV header
 		barfd("DetailWriter.WriteHeader()")
 		csvLine = ''
 		for field in statRow.dataFields():
-			csvLine += self._csvText(field.headerText(), field.dataType(), True)
+			csvLine += self._csvText(field.headerText(), field.dataType())
 		
 		self.Write(csvLine)
-
-	def Write(self,text):													# Write text to Detail CSV
-		barfd("DetailWriter.Write({})".format(text))
-		fhDetailCSV.write(text + '\n')
+		return True
 
 	def WriteRow(self,statRow):												# Write Google Sheet row to Detail CSV
-		detailCsvOpen(statRow)
+		self.Open(statRow)
 		csvLine = ''
 		for field in statRow.dataFields():
-			csvLine += csvText(field.value(), field.dataType(), True)		# TODO: type conversion problem possibilities? be careful mapping fields
+			csvLine += self._csvText(field.value(), field.dataType())
 
-		detailCsvWrite(statRow,csvLine)
+		self.Write(csvLine)
+		return True
 
 	def WriteStatusRows(self,statRows)										# Take list of Google Sheet Rows and barf to a CSV
 		self.CleanUp()
 		for stsRow in statRows:
 			self.WriteRow(stsRow)	
 		self.Close()
+		return True

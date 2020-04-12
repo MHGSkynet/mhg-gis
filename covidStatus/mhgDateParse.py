@@ -1,11 +1,28 @@
-#
-# ---------------------------------------------------------------------------------------------
-# mhgDateParse.py
-#
-# Description
-#
-# 	Date Parsing Classes and Routines
-#
+#                                               ,--.
+# -----------------------------------------    {    }      ------------------------------------
+# mhgDateParse.py                              K,   }
+#                                             /  `Y`
+# Description                            _   /   /
+#                                       {_'-K.__/
+#   Date Parsing Classes and Routines     `/-.__L._
+#                                         /  ' /`\_}
+#                                        /  ' /     
+#                                ____   /  ' /
+#                         ,-'~~~~    ~~/  ' /_
+#                       ,'             ``~~~%%',
+#                      (                     %  Y
+#                     {                      %% I
+#                    {      -                 %  `.
+#                    |       ',                %  )
+#                    |        |   ,..__      __. Y
+#                    |    .,_./  Y ' / ^Y   J   )|
+#                    \           |' /   |   |   ||
+#                     \          L_/    . _ (_,.'(
+#                      \,   ,      ^^""' / |      )
+#                        \_  \          /,L]     /
+#                          '-_`-,       ` `   ./`
+#                             `-(_            )
+#                                 ^^\.._M_,N--`
 # Copyright
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
@@ -17,9 +34,39 @@
 # 2020.04.06	01.03		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 from datetime import datetime
 import re
 import sys
+
+class DateParseResult(object):
+
+	# Properties (private)
+	_parsedDateTS		= None
+	_parsedDateYMD		= None
+
+	# Constructor
+	def __init__(self,aDateTS):
+		self._parsedDateTS	= aDateTS
+		self._parsedDateYMD	= None
+		if not aDateTS is None: self._parsedDateYMD = aDateTS.strftime("%Y.%m.%d")
+
+	#
+	# Properties (public)
+	#
+
+	# Date as timestamp datatype 
+	def dateTS(self):
+		return self._parsedDateTS
+
+	# Date as yyyy.mm.dd string
+	def dateYMD(self):
+		return self._parsedDateYMD
+		
+	# Your date sucks
+	def isBadDate(self):
+		isBad = self._parsedDateTS is None
+		return isBad
 
 class DateParser(object):
 
@@ -50,32 +97,3 @@ class DateParser(object):
 			dateTS = datetime.strptime(strptimeString, strptimeFormat)
 			
 		return dateTS
-		
-class DateParseResult(object):
-
-	# Properties (private)
-	_parsedDateTS		= None
-	_parsedDateYMD		= None
-
-	# Constructor
-	def __init__(self,aDateTS):
-		self._parsedDateTS	= aDateTS
-		self._parsedDateYMD	= None
-		if not aDateTS is None: self._parsedDateYMD = aDateTS.strftime("%Y.%m.%d")
-
-	#
-	# Properties (public)
-	#
-
-	# Date as timestamp datatype 
-	def dateTS(self):
-		return self._parsedDateTS
-
-	# Date as yyyy.mm.dd string
-	def dateYMD(self):
-		return self._parsedDateYMD
-		
-	# Your date sucks
-	def isBadDate(self):
-		isBad = self._parsedDateTS is None
-		return isBad

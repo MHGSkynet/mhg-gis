@@ -1,12 +1,25 @@
-#
-# ---------------------------------------------------------------------------------------------
-# mhgAppEnvironment.py
-#
-# Description
-#
-# 	Get environment information for MHG application
-#
-# Copyright
+#                                                                     _,'/
+# --------------------------------------------------             _.-''._:      ----------------
+# mhgAppEnvironment.py                                  ,-:`-.-'    .:.|
+#                                                       ;-.''       .::.|
+# Description                            _..------.._  / (:.       .:::.|
+#                                     ,'.   .. . .  .`/  : :.     .::::.|
+#   Application Environment Info    ,'. .    .  .   ./    \ ::. .::::::.|
+#                                 ,'. .  .    .   . /      `.,,::::::::.;\
+#                                /  .            . /       ,',';_::::::,:_:
+#                               / . .  .   .      /      ,',','::`--'':;._;
+#                              : .             . /     ,',',':::::::_:'_,'
+#                              |..  .   .   .   /    ,',','::::::_:'_,'
+#                              |.              /,-. /,',':::::_:'_,'
+#                              | ..    .    . /) /-:/,'::::_:',-'
+#                              : . .     .   // / ,'):::_:',' ;
+#                               \ .   .     // /,' /,-.','  ./
+#                                \ . .  `::./,// ,'' ,'   . /
+#                                 `. .   . `;;;,/_.'' . . ,'
+#                                  ,`. .   :;;' `:.  .  ,'
+#                                 /   `-._,'  ..  ` _.-'
+#                                (     _,'``------''  MHG
+# Copyright                       `--''
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
 #						non profit conservative organizations and individuals to use in support
@@ -34,7 +47,7 @@ class AppEnvironment:
 	
 	# Environment Constants (private)
 	_ENV_PACKAGE_FOLDER		= 'MHGGIS_ROOT'								# MHGGIS Package root folder environment var
-	_ROOT_KEY_FOLDERS		= [ 'data', 'kml', 'output' ] 				# MHGGIS Package folders for verification of install
+	_ROOT_KEY_FOLDERS		= [ 'data', 'kml', 'output', 'images' ]		# MHGGIS Package folders for verification of install
 
     #
 	# Constructor
@@ -49,8 +62,8 @@ class AppEnvironment:
 	#
 	# Package Info
 	#
-	def GetPackageRoot():																	# Get package root folder
-		packageRoot = os.environ.get(ENV_PACKAGE_FOLDER)									# See if root folder is defined
+	def GetPackageRoot():												# Get package root folder
+		packageRoot = os.environ.get(ENV_PACKAGE_FOLDER)				# See if root folder is defined
 		errorText 	= ''
 		errorText2 	= ''
 		if packageRoot is None:
@@ -79,3 +92,14 @@ class AppEnvironment:
 			raise EnvironmentError(errorText)
 
 		return packageRoot
+
+	#
+	# QGIS Package Root
+	#
+	def GetQgisRoot():													# Get QGIS package root from environment variable
+		rootFolder = os.environ.get(ENV_QGIS_ROOT)
+		if rootFolder is None: appExit(1,"ERROR: required environment variable {} is not set".format(ENV_QGIS_ROOT))
+		rootPath = Path(rootFolder)
+		if not rootPath.is_dir(): appExit(2,errorText = "ERROR: Folder {} does not exist. Fix {} environment variable.".format(packageFolder,ENV_QGIS_ROOT))
+		barfd("QGIS FOLDER={}".format(rootFolder))
+		return rootFolder

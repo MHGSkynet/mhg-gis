@@ -14,9 +14,10 @@
 #						and any other use prohibited.
 #
 # Date			Version		Author			Description
-# 2020.04.07	01.03		SquintMHG		New Module
+# 2020.04.07	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import sys
 
 # Impact Codes
@@ -40,10 +41,11 @@ class Impact(object):											# Impact
 #
 def impactWeight(impactSeverity):														# Determine Impact Weight - numeric weight of a severity code (A,M,S)
 	weight = 0
-	if impactSeverity.strip() == IMPACT_CODE_AVAILABLE:	weight = 1
-	if impactSeverity.strip() == IMPACT_CODE_MODERATE:	weight = 2
-	if impactSeverity.strip() == IMPACT_CODE_SEVERE:	weight = 3
-#	if impactSeverity.strip() == IMPACT_CODE_ZOMBIES:	weight = 12
+	if impactSeverity.strip() == IMPACT_CODE_AVAILABLE:		weight = 1
+	if impactSeverity.strip() == IMPACT_CODE_MODERATE:		weight = 2
+	if impactSeverity.strip() == IMPACT_CODE_SEVERE:		weight = 3
+	if AppSettings.glob().options().zombiesEnable() and 
+			impactSeverity.strip() == IMPACT_CODE_ZOMBIES:	weight = 12
 	return weight
 
 def impactScore(totalWeight,observeCount):												# Calculate Impact Score
@@ -57,5 +59,5 @@ def impactCodeFromScore(score):															# Derive Impact Code (A,M,S) from 
 	if score == 1: impactCode = IMPACT_CODE_AVAILABLE
 	if score == 2: impactCode = IMPACT_CODE_MODERATE
 	if score == 3: impactCode = IMPACT_CODE_SEVERE
-#	if score >= 4: impactCode = IMPACT_CODE_ZOMBIES
+	if AppSettings.glob().options().zombiesEnable() and score >= 4: impactCode = IMPACT_CODE_ZOMBIES
 	return impactCode

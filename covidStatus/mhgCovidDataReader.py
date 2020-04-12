@@ -41,6 +41,7 @@ from mhgDateParse import dateParseResult
 from mhgGoogleSheet import StatusRow
 
 import mhgCountyStats
+import mhgImpact
 import mhgStateStats
 import mhgUtility
 
@@ -50,7 +51,7 @@ import mhgUtility
 class CovidDataReader:
 
 	# Private data
-	_stateStats				= None												# State Stats 
+	_stateData				= None												# State Stats 
 	_dailyCounts			= None												# Number of reports by day
 	_gshtSheet				= None												# Google sheet
 
@@ -58,7 +59,7 @@ class CovidDataReader:
 	# Constructor
 	#
     def __init__(self):															# CovidDataReader Constructor
-		self._stateStats			= StateStats('Michigan')					#	Initialize State Statistics
+		self._stateData				= StateStats('Michigan')					#	Initialize State Statistics
 		self._dailyCounts			= {}										# 	Initialize daily report counts
 		_gshtSheet					= None										#	Initialize sheet object
 
@@ -69,82 +70,72 @@ class CovidDataReader:
 
 		_appOptions = AppSettings().glob().options()							# Get reference to application options
 
-		barfd("CovidDataReader.FetchCoronaData().enter")
-		barfd("CovidDataReader.FetchCoronaData: Fetching Data for {} ...".format(_appOptions.filterRangeText())
+		barfd("CovidDataReader.FetchCoronaData().Enter(filterRang={}".format(_appOptions.filterRangeText()))
 
-		# Intialize data
+		# Initialize data
 		fetchStatus 				= False										# Method status
 		self._dailyCounts			= {}										# Initialize daily report counts
 		shtMatchRowCt				= 0											# Initialize number of rows matching date filter
 
 		self._gshtSheet = GoogleSheet()											# Get a sheet object
 		if self._gshtSheet.GetData():											# Fetch the data
-			shtMatchRowCt = len(self._gsheetSheet.statusRowsFiltered())
+			shtMatchRowCt = len(self._gsheetSheet.statusRowsFiltered())			# Check that we got rows
 			if shtMatchRowCt == 0:												# Whine and fail if no data matches date range
-				if _appOptions.isDateRange():
-					print("WARNING: No spreadsheet data matches filter date range of {} to {}".format(_appOptions.startDate(),_appOptions.endDate()) )
-				else:
-					print("WARNING: No spreadsheet data matches filter date of {}".format(_appOptions.startDate()) )
+				shtRowCt = len(self._gsheetSheet.rowsRaw())
+				print("WARNING: {} rows read from sheet. No rows match date filter of {}".format(shtRowCt,_appOptions.filterRangeText()) )
 			else:
 				self.TallyStats()												# Generate calculated fields
 				fetchStatus = True												# Indicate success
 
-		barf("Fetch complete. {} records retrieved.".format(shtMatchRowCt))
-		
+		barfi("Fetch complete. {} records retrieved.".format(shtMatchRowCt))
+
 		barfd("CovidDataReader.FetchCoronaData.countyStats:{}".format(countyStats['Kent']))
-		
-		barfd("fetchCoronaData.exit rowCt={},matchCt={}".format(len(self._gsheetSheet.rowsRaw()),shtMatchRowCt))
+		barfd("CovidDataReader.FetchCoronaData().Exit(rowCt={},matchCt={})".format(len(self._gsheetSheet.rowsRaw()),shtMatchRowCt))
+
 		return fetchStatus
 
 	def TallyStats(self):
 	
-		barfd("CovidDataReader.TallyStats: Process sheet values")
-		self._stateStats.countyStats()	= CountyStats()
-		for stsRow in self._gshtSheet.StatusRowsFiltered():
+		barfd("CovidDataReader.TallyStats.Enter()")
+		self._stateData.ClearCountyData()
+		for stsRow in self._gshtSheet.StatusRowsFiltered():						# Iterate StatusRow objects from list of rows that match filter
 			
-			# Tally count of intel reports by Date
-			if not stsRow.intelDate() in self._dailyCounts: self._dailyCounts[stsRow.intelDate()] = 0
-			self._dailyCounts[stsRow.intelDate()] += 1
+			county = stsRow.county()											# Get county name of observation report
+			
+			self._stateData.AddDailyCount(stsRow.intelDate())						# Tally count of intel reports by date for state
+			self._stateData.countyData(county).AddDailyCount(stsRow.intelDate())	# Tally count of intel reports by date for county
 
-			county = stsRow.county()
-			if county != "":
-				if county == 'Kent':
-					barfd("CovidDataReader.TallyStats.addStats1:(util:{},svc:{},cons:{},max:{})".format(impactWeight(stsRow.utilities()),	\
-																									 impactWeight(stsRow.services()),	\
-																									 impactWeight(stsRow.consumables()),	\
-																									 self._countyStats.CountyStatistic(county,CountyStats.STAT_MAX_IMPACT))
-				self.countStats.CountyStatistic(county,CountyStats.STAT_STATUS_REPORTS) 	+= 1
-				self.countStats.CountyStatistic(county,CountyStats.STAT_UTILITIES_WEIGHT)	+= impactWeight(stsRow.utilities())
-				self.countStats.CountyStatistic(county,CountyStats.STAT_SERVICES_WEIGHT)	+= impactWeight(stsRow.services()))
-				self.countStats.CountyStatistic(county,CountyStats.STAT_CONSUMABLES_WEIGHT)	+= impactWeight(stsRow.consumables())
-				self.countStats.CountyStatistic(county,CountyStats.STAT_MAX_IMPACT)			=  max(self._countyStats.CountyStatistic(county,CountyStats.STAT_MAX_IMPACT)),	\
-																										impactWeight(stsRow.utilities()),	\
-																										impactWeight(stsRow.services()),	\
-																										impactWeight(stsRow.consumables()))
+			if county == 'Kent':
+				barfd("CovidDataReader.TallyStats.maxtest1(util:{},svc:{},cons:{},max:{})".format( \
+							impactWeight(stsRow.utilities()), impactWeight(stsRow.services()), impactWeight(stsRow.consumables()), \
+							self._stateData.countyData(county).maxImpact()))
 
-				if county=='Kent':
-					barfd("CovidDataReader.TallyStats.addStats2:(util:{},svc:{},cons:{},max:{})".format(impactWeight(stsRow.utilities()),	\
-																										 impactWeight(stsRow.services()),	\
-																										 impactWeight(stsRow.consumables()),	\
-																										 self.countyStats.CountyStatistic(county,CountyStats.STAT_MAX_IMPACT))
+			self._stateData.countyData(county).observationCount().AddValue(1)
+			self._stateData.countyData(county).utilityWeight().AddValue(impactWeight(stsRow.utilities()))
+			self._stateData.countyData(county).servicesWeight().AddValue(impactWeight(stsRow.services()))
+			self._stateData.countyData(county).consumablesWeight().AddValue(impactWeight(stsRow.consumables()))
 
-				self.countStats.CountyStatistic(county,CountyStats.STAT_2M_CHECKINS)		+= stsRow.checkins2M()
-				self.countStats.CountyStatistic(county,CountyStats.STAT_2M_PARTICIPATE)		+= stsRow.participate2M()
-				self.countStats.CountyStatistic(county,CountyStats.STAT_HF_CHECKINS)		+= stsRow.checkinsHF()
-				self.countStats.CountyStatistic(county,CountyStats.STAT_HF_PARTICIPATE) 	+= stsRow.participateHF()
+			self._stateData.countyData(county).AccumulateMaxScore(impactWeight(stsRow.utilities()),		\		# Single impact observation weight is same as score
+																	impactWeight(stsRow.services()),	\
+																	impactWeight(stsRow.consumables()))
 
-				if stsRow.intelDate() not in self.countStats.CountyStatistic(county,CountyStats.STAT_DAILY_COUNTS):
-					self.countStats.CountyStatistic(county,CountyStats.STAT_DAILY_COUNTS)[infoYmd] = 0
-				self.countStats.CountyStatistic(county,CountyStats.STAT_DAILY_COUNTS)[infoYmd] += 1
+			self._stateData.countyData(county).checkins2M().AddValue(stsRow.checkins2M())
+			self._stateData.countyData(county).participate2M().AddValue(stsRow.participate2M())
+			self._stateData.countyData(county).checkinsHF().AddValue(stsRow.checkinsHF())
+			self._stateData.countyData(county).participateHF().AddValue(stsRow.participateHF())
+
+			if county=='Kent':
+				barfd("CovidDataReader.TallyStats.maxtest2(util:{},svc:{},cons:{},max:{})".format( \
+							impactWeight(stsRow.utilities()), impactWeight(stsRow.services()), impactWeight(stsRow.consumables()), \
+							self._stateData.countyData(county).maxImpact()))
+
+		barfd("CovidDataReader.TallyStats.Exit()")
 
 	#
 	#  Getters
 	#
-	def countyStats(self):
-		return 	self._countyStats
-		
-	def dailyCounts(self):
-		return self._dailyCounts
+	def stateData(self):
+		return 	self._stateData
 		
 	def covidSheet(self):
 		return self._gshtSheet

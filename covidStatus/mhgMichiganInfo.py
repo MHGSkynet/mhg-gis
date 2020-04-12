@@ -17,6 +17,7 @@
 # 2020.04.10	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# MHGLIB includes
 include mhgRegion
 
 class MichiganInfo(object):

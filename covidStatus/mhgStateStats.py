@@ -17,11 +17,12 @@
 # 2020.04.10	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# MHGLIB includes
 import mhgCountyStats
-import mhgObservationStats
+import mhgCumulativeStats
 import mhgImpact
 
-class StateStats(ObservationStats):
+class StateStats(CumulativeStats):
 
 	# Statistics Constants (public)
 	STATE_DEFAULT					= 'DEFAULT'											# Default state name
@@ -31,24 +32,25 @@ class StateStats(ObservationStats):
 	# Properties (private)
 	_fieldData						= []
 	_stateName						= None
-	_dailyCounts					= None
-	_countyStats					= {}												# Hash of CountyStats objects, by county name
+	_countyData						= {}												# Hash of CountyStats objects, by county name
 
 	# Constructor
     def __init__(self,stateName):
 		self._SetDefaults()																# Set new object defaults
 		self._stateName	= stateName														# Set state name
-		self._countyStats			= {}												# Initialize Hash of CountyStats objects, by county name
 		
 	#
 	# Methods (private)
 	#
 	def _SetDefaults(self):
-		super(StateStats, self)._SetDefaults()
-		self._state					= DataField(self.STAT_STATE,				DataField.DTYPE_TEXT,		'State',				self.STATE_DEFAULT)
-		self._dailyCounts			= {}
-	
-	def _SetFieldData(self):
+		super(StateStats, self)._SetDefaults()											# Do parent Initializations
+		self._countyStats			= {}												# Initialize Hash of CountyStats objects, by county name
+		self._stateName				= DataField(fldid:	self.STAT_STATE,						
+												dtype:	DataField.DTYPE_TEXT,
+												header:	'State',
+												value: 	self.STATE_DEFAULT)
+
+	def _SetFieldData(self):															# Create list of DataField items from properties
 		self._fieldData = []
 		self._fieldData.append(self._statusStartDate)
 		self._fieldData.append(self._statusEndDate)
@@ -86,16 +88,16 @@ class StateStats(ObservationStats):
 
 	def _CrunchCountyData(self):
 		self._ZeroAccumulators()
-		for countyName in self.covidStats.keys()
-			self._observeDays.SetValue( self._observeDays.value() + self._countyStats{countyName}.observeDays().value() )
-			self._observeCount.SetValue( self._observeCount.value() + self._countyStats{countyName}.observeCount().value() )
-			self._utilityWeight.SetValue( self._utilityWeight.value() + self._countyStats{countyName}.utilityWeight().value() )
-			self._servicesWeight.SetValue( self._servicesWeight.value() + self._countyStats{countyName}.servicesWeight().value() )
-			self._consumablesWeight.SetValue( self._consumablesWeight.value() + self._countyStats{countyName}.consumablesWeight().value() )
-			self._checkins2M.SetValue( self._checkins2M.value() + self._countyStats{countyName}.checkins2M().value() )
-			self._participate2M.SetValue( self._participate2M.value() + self._countyStats{countyName}.participate2M().value() )
-			self._checkinsHF.SetValue( self._checkinsHF.value() + self._countyStats{countyName}.checkinsHF().value() )
-			self._participateHF.SetValue( self._participateHF.value() + self._countyStats{countyName}.participateHF().value() )
+		for countyName in self._countyData.keys()
+			self._observeDays.SetValue( self._observeDays.value() + self._countyData{countyName}.observeDays().value() )
+			self._observeCount.SetValue( self._observeCount.value() + self._countyData{countyName}.observeCount().value() )
+			self._utilityWeight.SetValue( self._utilityWeight.value() + self._countyData{countyName}.utilityWeight().value() )
+			self._servicesWeight.SetValue( self._servicesWeight.value() + self._countyData{countyName}.servicesWeight().value() )
+			self._consumablesWeight.SetValue( self._consumablesWeight.value() + self._countyData{countyName}.consumablesWeight().value() )
+			self._checkins2M.SetValue( self._checkins2M.value() + self._countyData{countyName}.checkins2M().value() )
+			self._participate2M.SetValue( self._participate2M.value() + self._countyData{countyName}.participate2M().value() )
+			self._checkinsHF.SetValue( self._checkinsHF.value() + self._countyData{countyName}.checkinsHF().value() )
+			self._participateHF.SetValue( self._participateHF.value() + self._countyData{countyName}.participateHF().value() )
 
 	#
 	# Methods (private)
@@ -104,15 +106,22 @@ class StateStats(ObservationStats):
 	#
 	# Methods (public)
 	#
+	def ClearCountyData(self):
+		self._countyData = {CountyStats.COUNTY_DEFAULT: CountyStats()}				# Initialize county data hash with a default county item
 
 	#
 	# Property Getters (public)
 	#
 	def stateName(self):
-		return self._statusStartDate
+		return self._stateName.value()
 		
-	def dailyCounts(self):
-		return self._dailyCounts
+	def countyList(self):
+		return keys(self._countyData)
+		
+	def countyData(self,county):
+		if not county in self._countyData:											# Add county, with default values, if not already in hash
+			self._countyData[county]	= CountyStats(county)
+		return self._countyData[county]
 		
 	#
 	# Property Getters, Calculated (public)

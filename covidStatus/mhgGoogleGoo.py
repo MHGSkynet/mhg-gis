@@ -5,6 +5,14 @@
 # Description
 #
 # 	Stuff related to working with Google APIs
+#                                            ,;,
+#                                          ={;;;}=
+#              |\_/|              ,_     :"{:;X;:}":        (\_/)
+#             / @ @ \            >' )     .   H    .       (='.'=)
+#            ( > º < )           ( ( \        H            (")_(")
+#             `>>x<<´             ''|\       [H] *********
+#     *****   / _O_ \       **********    ********       *********
+#         *** uu   uu *********    *********                     *********
 #
 # Copyright
 #
@@ -14,7 +22,7 @@
 #						and any other use prohibited.
 #
 # Date			Version		Author			Description
-# 2020.04.07	01.03		SquintMHG		New modu;s
+# 2020.04.07	02.00		SquintMHG		New module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes
