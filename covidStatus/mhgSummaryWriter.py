@@ -68,6 +68,7 @@ class SummaryWriter(CsvWriter):												# Summary CSV Writer class
 		csvLine = ''
 		for field in stats.dataFields():
 			csvLine += self._csvText(field.value(), field.dataType())
+		self.Write(csvLine)	
 
 	def WriteStateCountyStats(self,stateData):								# Dump everything in a hash of CountyStats to Summary CSV
 		success = True

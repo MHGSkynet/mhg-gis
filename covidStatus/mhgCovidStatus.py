@@ -117,14 +117,14 @@ def appExit(err=None):
 """
 def main():
 
-	# App Start
-	print ("####\n#### {} starting.\n####".format(AppSettings.PROGNM))
-
 	# Get Application settings (environment info and command args). Retain a reference to command arg options for convenience
 	try:
 		_appOptions = AppSettings.glob().options()
 	except (CommandArgError, EnvironmentError) as err:
 		appExit(err)
+
+	# App Start
+	print ("####\n#### {} starting.\n####".format(AppSettings.PROGNM))
 
 	# Get Corona data from spreadsheet
 	dataReader = CovidDataReader()

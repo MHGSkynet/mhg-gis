@@ -193,7 +193,6 @@ class GisWriter():
 
 	def _LoadKmlLayer(self):														# Load Status KML as a vector layer and display
 		statusKml = AppSettings.glob().statusKmlSpec()								#    Get file spec of KML to load
-		statusKml = "E:/gis/mhg-gis/data/mhgCovidStatus.kml"
 		barfd("GisWriter._LoadKmlLayer.enter(statusKml={})".format(statusKml))		#
 		#if self._USE_GUI:
 		#	self._statusLayer = \

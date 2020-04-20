@@ -38,8 +38,9 @@
 #           --ndays [NDAYS]  Number of days from begin date to select data by
 #           --nodetail       Disables capture of detail to daily CSV files
 #           --nosummary      Disables generation of summary info CSV file
-#           --info           Whether to barf verbose info
+#           --info           Whether to barf progress info
 #           --debug          Whether to barf debug info
+#       	--zombies        Whether to enable zombie tracking
 # 
 #       Note:
 #           dates may be entered mm/dd, mm/dd/yyyy or yyyy.mm.dd
@@ -58,4 +59,3 @@
 # 2020.04.06    01.03       SquintMHG       Rework scripts to classes, add command args
 # 2020.03.23    01.00       SquintMHG       Initial version
 # ---------------------------------------------------------------------------------------------
-

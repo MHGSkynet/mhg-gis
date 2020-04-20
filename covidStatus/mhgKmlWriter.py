@@ -134,6 +134,7 @@ class KmlWriter(object):									# KML Writer class
 
 			statsKey = None
 			lookFor  = 'placemark'
+			traceCounty='Wayne'				#debug
 			for kmlLineIndex in range(0,len(self._kmlLines)-1):
 				self._kmlLines[kmlLineIndex] = self._kmlLines[kmlLineIndex].replace(chr(10),'')
 				self._kmlLines[kmlLineIndex] = self._kmlLines[kmlLineIndex].replace(chr(13),'')
@@ -157,19 +158,19 @@ class KmlWriter(object):									# KML Writer class
 
 				if lookFor == 'schemaStart' and schemaDataStartPattern.match(kmlLine): lookFor = 'schemaData'
 				if lookFor == 'schemaData'  and schemaDataItemPattern.match(kmlLine):
-					if kmlCounty == 'Kent': barft("KmlWriter._MergeData.EvaluatingData(kmlLine={})".format(kmlLine))
+					if kmlCounty == traceCounty: barft("KmlWriter._MergeData.EvaluatingData(kmlLine={})".format(kmlLine))
 					schemaDataItemMatch = schemaDataItemPattern.match(kmlLine)
 					schemaItemName	= schemaDataItemMatch.group(1)
 					schemaItemValue	= schemaDataItemMatch.group(2)
 					if schemaItemName in self._STATE_SCHEMA_DATA_MAP:
 						statName = self._STATE_SCHEMA_DATA_MAP[schemaItemName]
-						barft("KmlWriter._MergeData.Updating kmlLine={}".format(kmlLine))
-						barft("KmlWriter._MergeData.Updating county={},statName={}".format(statsCounty,statName))
-						barft("KmlWriter._MergeData.Updating schemaItemName={}".format(schemaItemName))
+						if kmlCounty == traceCounty: barft("KmlWriter._MergeData.Updating kmlLine={}".format(kmlLine))
+						if kmlCounty == traceCounty: barft("KmlWriter._MergeData.Updating county={},statName={}".format(statsCounty,statName))
+						if kmlCounty == traceCounty: barft("KmlWriter._MergeData.Updating schemaItemName={}".format(schemaItemName))
 						schemaDataUpdateMatch = schemaDataUpdatePattern.match(kmlLine)
 						newKmlValue = str(stateData.countyData(statsCounty).FieldFromId(statName).value())
 						self._kmlLines[kmlLineIndex] = schemaDataUpdateMatch.group(1) + newKmlValue + schemaDataUpdateMatch.group(3)
-						barft("KmlWriter._MergeData.Updated kmlLine={}".format(self._kmlLines[kmlLineIndex]))
+						if kmlCounty == traceCounty: barft("KmlWriter._MergeData.Updated kmlLine={}".format(self._kmlLines[kmlLineIndex]))
 
 				if (lookFor == 'schemaData' or lookFor == lookForLast) and schemaDataEndPattern.match(kmlLine): lookFor = 'placemark'
 
