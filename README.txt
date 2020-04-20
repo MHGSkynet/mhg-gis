@@ -56,6 +56,6 @@
 #
 #
 # Date			Version		Author			Description
-# 2020.04.06    01.03       SquintMHG       Rework scripts to classes, add command args
+# 2020.04.20    02.00       SquintMHG       Rewrite as an app from a pair of scripts
 # 2020.03.23    01.00       SquintMHG       Initial version
 # ---------------------------------------------------------------------------------------------

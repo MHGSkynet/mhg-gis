@@ -26,7 +26,7 @@
 #   Add dynamic filters. Currently, only a date filter is applied
 #
 # Date			Version		Author			Description
-# 2020.04.07	02.00		SquintMHG		New module
+# 2020.04.20	02.00		SquintMHG		New module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes

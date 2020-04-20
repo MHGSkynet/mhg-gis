@@ -42,7 +42,7 @@
 ::						and any other use prohibited.
 ::  
 :: Date        Version     Author          Description
-:: 2020.04.06  02.00       SquintMHG       App rewrite, add command line arguments, etc
+:: 2020.04.20  02.00       SquintMHG       App rewrite, add command line arguments, etc
 :: 2020.04.04  01.02       SquintMHG       Fix folders with spaces
 :: 2020.03.26  01.00       SquintMHG       Initial version
 :: ---------------------------------------------------------------------------------------------

@@ -21,7 +21,7 @@
 #						and any other use prohibited.
 #
 # Date			Version		Author			Description
-# 2020.04.07	02.00		SquintMHG		New module
+# 2020.04.20	02.00		SquintMHG		New module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes
