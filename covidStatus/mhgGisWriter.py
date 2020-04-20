@@ -62,20 +62,18 @@ from qgis.core 	import QgsTextFormat
 from qgis.core 	import QgsUnitTypes
 from qgis.core 	import QgsVectorLayerSimpleLabeling
 from qgis.gui  	import QgsLayerTreeMapCanvasBridge
-from qgis.utils   import iface
+#from qgis.utils   import iface
 from PyQt5.QtCore import QRectF
 from PyQt5.QtGui  import QColor
 from PyQt5.QtGui  import QFont
 from PyQt5.QtGui  import QPageSize
 
-import processing
-from processing.core.Processing import Processing
-
 # MHGLIB includes
-import mhgAppSettings
-import mhgColors
-import mhgFont
-import mhgException
+from mhgAppSettings		import AppSettings
+from mhgColors			import Colors
+from mhgFont			import Font
+from mhgException		import RenderError
+from mhgUtility  		import *
 
 
 class GisWriter():
@@ -84,7 +82,7 @@ class GisWriter():
 	# Constants (private)
 	#
 	_HEADLESS			= True														# Run HEADLESS
-	_USE_GUI			= not HEADLESS												# Run with GUI
+	_USE_GUI			= not _HEADLESS												# Run with GUI
 	_KDATA_KEYFIELD		= 'STATUS_MAX'												# Schema field to drive labeling (county coloring)
 
 	#
@@ -97,9 +95,18 @@ class GisWriter():
 	_reportDateFormatW	= "Week Ending %m/%d/%Y"									# Report Date format, week range  (Week Ending 06/04/2020)
 	_reportDateFormatM	= "%B %Y"													# Report Date format, month       (July 2020)
 	
+	_qgisEngine			= None														# QGIS Engine
 	_project			= None														# GIS Project object
 	_statusLayer		= None														# Project KML Vector Layer object
-	_statusPrintLayout	= None														# Print layout object for rendering
+	_statusRenderer		= None														# Renderer for categories
+	_statusCategories	= None														# Categories for renderer
+	_statusPrintLayout	= None														# Print layout object for project
+	_statusMap			= None														# Map for print layout
+	_logoPicture		= None														# Logo picture object for print layout
+	_statusDateLabel	= None														# Date label for print layout
+	_titleLabel			= None														# Title label for print layout
+	_legend				= None														# Legend for print layout
+	_layerTree			= None														# Layer tree for legend
 
 	_reportTitleFont	= None														# Report Title
 	_reportDateFont		= None														# Report Date Font
@@ -113,7 +120,7 @@ class GisWriter():
 	#
 	def __init__(self):																# Constructor
 		self._InitializeFonts()														#    Initialize fonts
-		return self
+		self._InitializeQgis()														#    Initialize QGIS
 
 	#
 	# Properties (public)
@@ -121,14 +128,14 @@ class GisWriter():
 	def reportDateText(self):														# Generate report date text string.
 		textDate = ''
 		if 1 == AppSettings.glob().options().nDays():
-			textDate = AppSettings.glob().options().endDateTS.strftime(self._reportDateFormat1)
+			textDate = AppSettings.glob().options().endDateTS().strftime(self._reportDateFormat1)
 		elif 7 == AppSettings.glob().options().nDays():
-			textDate = AppSettings.glob().options().endDateTS.strftime(self._reportDateFormatW)
+			textDate = AppSettings.glob().options().endDateTS().strftime(self._reportDateFormatW)
 		elif 1 == AppSettings.glob().options().startDateTS().day and isBetween(AppSettings.glob().options().nDays(),28,31):
-			textDate = AppSettings.glob().options().endDateTS.strftime(self._reportDateFormatM)
+			textDate = AppSettings.glob().options().endDateTS().strftime(self._reportDateFormatM)
 		else:
-			startText = AppSettings.glob().options().startDateTS.strftime(self._reportDateFormat2)
-			endText = AppSettings.glob().options().endDateTS.strftime(self._reportDateFormat2)
+			startText = AppSettings.glob().options().startDateTS().strftime(self._reportDateFormat2)
+			endText = AppSettings.glob().options().endDateTS().strftime(self._reportDateFormat2)
 			textDate = "{} to {}".format(startText,endText)
 		return textDate
 
@@ -136,45 +143,70 @@ class GisWriter():
 	# Methods (private)
 	#
 	def _InitializeFonts(self):														# Initialize Fonts
+		barfd("GisWriter._InitializeFonts.enter()")									#
 		self._reportTitleFont	= Font( Font.FONT_MS_SHELL_DLG2, 16 )				#    Report Title
-		self._reportDateFont	= Font( Font.FONT_MS_SHELL_DLG2, 14,	\			#    Report Date Font
-											Colors.COLOR_BLACK,			\			#
-											Font.FONT_STYLE_BOLD )  				#
+		self._reportDateFont	= Font( Font.FONT_MS_SHELL_DLG2, 14,				#    Report Date Font
+											Colors.COLOR_BLACK,						#
+											Font.FONT_WEIGHT_BOLD )  				#
 		self._legendTitleFont	= Font( Font.FONT_MS_SHELL_DLG2, 12 )				#    Legend Title Font
 		self._legendSymbolFont	= Font( Font.FONT_MS_SHELL_DLG2, 8 )				#    Legend Symbols Font
 		self._legendLabelFont	= Font( Font.FONT_MS_SHELL_DLG2, 8 )				#    Legend Labels Font
 		self._labelingFont		= Font( Font.FONT_ARIAL, 6, Colors.COLOR_BLACK )	#    Labeling Font (Counties)
+		barfd("GisWriter._InitializeFonts.exit()")									#
 		return True
 
 	def _InitializeQgis(self):														# Initialize QGIS
-		sys.path.append(AppSettings.glob().qgisPythonFolder())						#    Add QGIS Pytho plugins to search path
+		barfd("GisWriter._InitializeQgis.enter()")
+		barfd("GisWriter._InitializeQgis.env(qgisPythonFolder={})".format(AppSettings.glob().qgisPythonFolder()))
+		barfd("GisWriter._InitializeQgis.env(qgisBinFolder={})".format(AppSettings.glob().qgisBinFolder()))
+
+		sys.path.append(AppSettings.glob().qgisPythonFolder())						#    Add QGIS Python plugins to search path
+
+		barfd("####PATH#####")
+		barfd("InitializeQgis.path={})".format('\n'.join(sys.path)))
+		barfd("####PATH#####")
+
 		QgsApplication.setPrefixPath(AppSettings.glob().qgisBinFolder(), True)		#    Define QGIS Install point
-		qgs = QgsApplication([], USE_GUI)											#    Create a QGIS Application instance, HEADLESS or with GUI
-		qgs.initQgis()																#    Load QGIS providers
-		Processing.initialize()														#    Start processing
+		self._qgisEngine = QgsApplication([], False)								#    Create a QGIS Application instance, HEADLESS or with GUI
+		self._qgisEngine.initQgis()													#    Load QGIS providers
+
+		#import processing															#        ### WHAT SHIT AMATEUR DESIGN! These imports     ###
+		#from processing.core.Processing import Processing							#        ###     MUST occur AFTER initQgis() is called.  ###
+		#Processing.initialize()													#    Start processing
+
+		#																			#        ###TODO: Determine why processing leaves open ssh channel to Google.
+		#																			#        ###TODO: Err message on garbage cleanup at exit...
+		#																			#        ###TODO:     sys:1: ResourceWarning: unclosed <ssl.SSLSocket fd=916, family=AddressFamily.AF_INET,
+		#																			#        ###TODO:                                       type=SocketKind.SOCK_STREAM, proto=0,
+		#																			#        ###TODO:                                       laddr=('192.168.0.7', 50050), raddr=('172.217.9.74', 443)>
+
+		barfd("GisWriter._InitializeQgis.exit()")
+		return True
 
 	def _NewGisProject(self):														# Create GIS Project
-		barfd("GisWriter.CreateProject().Enter()")									#
+		barfd("GisWriter._NewGisProject.enter()")									#
 		self._project = QgsProject.instance()										#     Instance a GIS project
 		if self._USE_GUI:															#     If not headless, create an interface bridge
 			bridge = QgsLayerTreeMapCanvasBridge( self._project.layerTreeRoot(), iface.mapCanvas())
-		barfd("GisWriter.CreateProject().Exit()")
+		barfd("GisWriter._NewGisProject.exit()")
 		return True
 
 	def _LoadKmlLayer(self):														# Load Status KML as a vector layer and display
 		statusKml = AppSettings.glob().statusKmlSpec()								#    Get file spec of KML to load
-		if self._USE_GUI:
-			self._statusLayer = \
-				iface.addVectorLayer(statusKml, self._layerTitle, "ogr")
-		else:
-			barfd("GisWriter._LoadKmlLayer.Load(file={})".format(statusKml))
-			self._statusLayer = QgsVectorLayer(statusKml, self._layerTitle, "ogr")
-			barfd("GisWriter._LoadKmlLayer.AddLayer()")
-			self._project.addMapLayer(self._statusLayer)
+		statusKml = "E:/gis/mhg-gis/data/mhgCovidStatus.kml"
+		barfd("GisWriter._LoadKmlLayer.enter(statusKml={})".format(statusKml))		#
+		#if self._USE_GUI:
+		#	self._statusLayer = \
+		#		iface.addVectorLayer(statusKml, self._layerTitle, "ogr")
+		#else:
+		barfd("GisWriter._LoadKmlLayer.Load(file={})".format(statusKml))
+		self._statusLayer = QgsVectorLayer(statusKml, self._layerTitle, "ogr")
+		barfd("GisWriter._LoadKmlLayer.AddLayer()")
+		self._project.addMapLayer(self._statusLayer)
 
-		if not statusLayer.isValid():												#    If layer didn't load, hit the eject
+		if not self._statusLayer.isValid():											#    If layer didn't load, hit the eject
 			raise RenderError("GisWriter.ERROR: KML layer failed to load!")			#        button.
-		
+
 		self._statusLayer.setName(self._layerTitle)									#    Set title of layer
 		barfd("GisWriter._LoadKmlLayer.Exit()")
 		return True
@@ -194,9 +226,9 @@ class GisWriter():
 		barfd("GisWriter._LayerSetLabeling.Exit()")
 		return True
 
-	def _AddSymbolCategory(self,statusLayer,impactCode,impactDesc, \				# Category List - Add a Symbol
+	def _AddSymbolCategory(self,impactCode,impactDesc,								# Category List - Add a Symbol
 							symbolColor,categoryList):	
-		symbol = QgsSymbol.defaultSymbol(statusLayer.geometryType())				#    create a symbol object
+		symbol = QgsSymbol.defaultSymbol(self._statusLayer.geometryType())			#    create a symbol object
 		layer_style = {}															#    set the symbol's style
 		layer_style['color']   = symbolColor										#       color
 		layer_style['outline'] = Colors.COLOR_BLACK									#       outline (black)
@@ -211,44 +243,46 @@ class GisWriter():
 	def _DebugDumpLayerFields(self):
 		barfd("GisWriter._DebugDumpLayerFields.FIELDS-begin-#####")
 		fields = self._statusLayer.fields()
-		barfd(fields.names())
+		barfd("GisWriter._DebugDumpLayerFields.FIELDS=\n{}".format(fields.names()))
 		barfd("GisWriter._DebugDumpLayerFields.FIELDS-end-#####")
 		return True
 	
-	def _LayerSetCategories(self):													# Define Status Categories and set up Symbol Rendering
-		barfd("GisWriter._LayerSetCategories.Enter()")
-		fni = self._statusLayer.fields().indexFromName(self._KDATA_KEYFIELD)		#     Get index number of KML field to use as basis for categorization
+	def _LayerSetCategories(self):																		# Define Status _statusCategories and set up Symbol Rendering
+		barfd("GisWriter._LayerSetCategories.Enter()")	
+		fni = self._statusLayer.fields().indexFromName(self._KDATA_KEYFIELD)							#     Get index number of KML field to use as basis for categorization
 		barfd("GisWriter._LayerSetCategories(KEYFIELD={},index={})".format(self._KDATA_KEYFIELD,fni))
 
-		if AppSettings.glob().options.debugEnabled(): self._DebugDumpLayerFields()
+		if AppSettings.glob().options().debugEnabled(): self._DebugDumpLayerFields()
 
-		categories = []																#    Initialize a list of categories
-		addSymbolCategory('A', 'All Available',   Colors.COLOR_GREEN,  categories)	#        Add statuses...
-		addSymbolCategory('M', 'Moderate Impact', Colors.COLOR_YELLOW, categories)
-		addSymbolCategory('S', 'Severe Impact',   Colors.COLOR_RED,    categories)
-		if AppSettings.glob().options.zombiesEnabled():
-			addSymbolCategory('Z', 'Zombies Oubreak', Colors.COLOR_BLACK,   categories)
+		self._statusCategories = []																		#    Initialize a list of categories
+		self._AddSymbolCategory('A', 'All Available',   Colors.COLOR_GREEN,  self._statusCategories)	#        Add statuses...
+		self._AddSymbolCategory('M', 'Moderate Impact', Colors.COLOR_YELLOW, self._statusCategories)
+		self._AddSymbolCategory('S', 'Severe Impact',   Colors.COLOR_RED,    self._statusCategories)
+		if AppSettings.glob().options().zombiesEnabled():
+			self._AddSymbolCategory('Z', 'Zombies Oubreak', Colors.COLOR_BLACK,   self._statusCategories)
 
-		addSymbolCategory('', 'Unknown Impact',   Colors.COLOR_GREY,   categories)	#        ... use blank status to handle U as well as any other code
+		self._AddSymbolCategory('', 'Unknown Impact',  Colors.COLOR_GREY, self._statusCategories)		#    ... use blank status to handle 'U' status as well as any other code
 
 		barfd("GisWriter._LayerSetCategories.CreateSymbolRenderer()")
-		statusRenderer = QgsCategorizedSymbolRenderer(self._KDATA_KEYFIELD, categories)	#    ... create renderer object
-		if statusRenderer is None:													#        ... if renderer failed to instance itself, eject
-			appExit(ERR_BADRENDER,"ERROR: Can't create Category Symbol Renderer")   #
-		else:
-			self._statusLayer.setRenderer(statusRenderer)							#        ... assign the created renderer to the layer
 
-		barfd("DEBUG Repaint")
-		self._statusLayer.triggerRepaint()
+		self._statusRenderer = QgsCategorizedSymbolRenderer(self._KDATA_KEYFIELD, self._statusCategories)  # Create renderer for category statuses
+		if self._statusRenderer is None:																#    ... if renderer failed to instance itself, eject
+			raise RenderError("GisWriter.ERROR: Can't create Category Symbol Renderer")					#        button.
+		else:
+			self._statusLayer.setRenderer(self._statusRenderer)											#    ... assign the created renderer to the layer
+
+		self._statusLayer.triggerRepaint()																#    Repaint layer
 		barfd("GisWriter._LayerSetCategories.Exit()")
 		return True
 
 	def _ProjectAddPrintLayout(self):
 
-		# Layout
 		barfd("GisWriter._ProjectAddPrintLayout.Enter()")
+
+		# Layout
+		barfd("GisWriter._ProjectAddPrintLayout.CreateLayout()")
 		statusLayoutName = "MGHStatus"
-		self._statusPrintLayout = QgsPrintLayout(project)
+		self._statusPrintLayout = QgsPrintLayout(self._project)
 		self._statusPrintLayout.initializeDefaults()
 		self._statusPrintLayout.setName(statusLayoutName)
 		self._statusPrintLayout.setUnits(QgsUnitTypes.LayoutMillimeters)
@@ -267,114 +301,147 @@ class GisWriter():
 		# Map
 		barfd("GisWriter._ProjectAddPrintLayout.AddMap2Paage()")					# Add Map to Page
 		extent = QgsRectangle(-91.000, 41.101, -80.550, 48.928)						# Michigan Extent: -90.4182894376677524,41.6961255762931202 : -82.4134779482332078,48.2626923653278865
-		map = QgsLayoutItemMap(self._statusPrintLayout)
-		map.setRect(QRectF(-91.000, 41.101, -80.550, 48.928))
-		map.setExtent(extent)
+		self._statusMap = QgsLayoutItemMap(self._statusPrintLayout)
+		self._statusMap.setRect(QRectF(-91.000, 41.101, -80.550, 48.928))
+		self._statusMap.setExtent(extent)
 		a4 = QPageSize().size(QPageSize.A4, QPageSize.Millimeter)
-		map.attemptResize(QgsLayoutSize(a4.height(), a4.width()))
-		self._statusPrintLayout.addItem(map)
+		self._statusMap.attemptResize(QgsLayoutSize(a4.height(), a4.width()))
+		self._statusPrintLayout.addItem(self._statusMap)
 
 		# Logo
 		barfd("GisWriter._ProjectAddPrintLayout.AddLogo1()")
-		logoPicture = QgsLayoutItemPicture(self._statusPrintLayout)
+		self._logoPicture = QgsLayoutItemPicture(self._statusPrintLayout)
 		barfd("GisWriter._ProjectAddPrintLayout.AddLogo2()")
-		logoPicture.setPicturePath(AppSettings.glob().mhgLogoSpec())
+		self._logoPicture.setPicturePath(AppSettings.glob().mhgLogoSpec())
 		barfd("GisWriter._ProjectAddPrintLayout.AddLogo3()")
-		logoPicture.setLinkedMap(map)
-		logoPicture.attemptResize(QgsLayoutSize(88.009, 85.375, QgsUnitTypes.LayoutMillimeters))
-		logoPicture.attemptMove(QgsLayoutPoint(21.537, 106.912, QgsUnitTypes.LayoutMillimeters))
-		self._statusPrintLayout.addItem(logoPicture)
-
-		# Date
-		barfd("GisWriter._ProjectAddPrintLayout.AddReportDate()")
-		textDate = self.reportDateText()
-		statusDateLabel = QgsLayoutItemLabel(self._statusPrintLayout)
-		barfd("GisWriter._ProjectAddPrintLayout.AddReportDate()")
-		statusDateLabel.setText(textDate)
-		statusDateLabel.setFont(self._reportDateFont.qFont())
-		statusDateLabel.adjustSizeToText()
-		statusDateSize = statusDateLabel.sizeWithUnits()
-		statusDateLabelX = page.pageSize().width() - statusDateSize.width() - 4
-		statusDateLabel.attemptMove(QgsLayoutPoint(statusDateLabelX, 10))
-		self._statusPrintLayout.addItem(statusDateLabel)
+		self._logoPicture.setLinkedMap(self._statusMap)
+		self._logoPicture.attemptResize(QgsLayoutSize(88.009, 85.375, QgsUnitTypes.LayoutMillimeters))
+		self._logoPicture.attemptMove(QgsLayoutPoint(21.537, 106.912, QgsUnitTypes.LayoutMillimeters))
+		self._statusPrintLayout.addItem(self._logoPicture)
 
 		# Title
 		barfd("GisWriter._ProjectAddPrintLayout.AddTitle()")
-		titleLabel = QgsLayoutItemLabel(self._statusPrintLayout)
-		titleLabel.setText(reportTitle)
+		titleLabel = QgsLayoutItemLabel(self._statusPrintLayout)					# TODO: Determine why instancing first QgsLayoutItemLabel object causes (2) "libpng warning: iCCP: known incorrect sRGB profile" warnings
+		barfd("GisWriter._ProjectAddPrintLayout.AddTitle2()")
+		titleLabel.setText(self._reportTitle)
 		titleLabel.setFont(self._reportTitleFont.qFont())
 		titleLabel.adjustSizeToText()
 		titleLabel.setReferencePoint(QgsLayoutItem.UpperMiddle)
 		titleLabel.attemptMove(QgsLayoutPoint(page_center, 10))
 		self._statusPrintLayout.addItem(titleLabel)
 
+		# Date
+		barfd("GisWriter._ProjectAddPrintLayout.AddReportDate()")
+		self._statusDateLabel = QgsLayoutItemLabel(self._statusPrintLayout)
+		barfd("GisWriter._ProjectAddPrintLayout.AddReportDate2()")
+		textDate = self.reportDateText()
+		self._statusDateLabel.setText(textDate)
+		self._statusDateLabel.setFont(self._reportDateFont.qFont())
+		self._statusDateLabel.adjustSizeToText()
+		statusDateSize = self._statusDateLabel.sizeWithUnits()
+		statusDateLabelX = page.pageSize().width() - statusDateSize.width() - 4
+		self._statusDateLabel.attemptMove(QgsLayoutPoint(statusDateLabelX, 10))
+		self._statusPrintLayout.addItem(self._statusDateLabel)
+
 		# Legend
 		barfd("GisWriter._ProjectAddPrintLayout.AddLegend()")
-		legend = QgsLayoutItemLegend(self._statusPrintLayout)
-		layerTree = QgsLayerTree()
-		layerTree.addLayer(statusLayer)
-		legend.model().setRootGroup(layerTree)
-		legend.setLinkedMap(map)
-		#legend.setTitle("Status")
-		legend.setStyleFont(QgsLegendStyle.Title, self._legendTitleFont.qFont())
-		legend.setStyleFont(QgsLegendStyle.Symbol, self._legendSymbolFont.qFont())
-		legend.setStyleFont(QgsLegendStyle.SymbolLabel, self._legendLabelFont.qFont())
-		legend.attemptMove(QgsLayoutPoint(256.000, 159.600, QgsUnitTypes.LayoutMillimeters)) 	# 258.603, 168.270, 37.400, 37.700
-		legend.adjustBoxSize()
-		self._statusPrintLayout.addItem(legend)
+		self._legend = QgsLayoutItemLegend(self._statusPrintLayout)
+		self._layerTree = QgsLayerTree()
+		self._layerTree.addLayer(self._statusLayer)
+		self._legend.model().setRootGroup(self._layerTree)
+		self._legend.setLinkedMap(self._statusMap)
+		#self._legend.setTitle("Status")
+		self._legend.setStyleFont(QgsLegendStyle.Title, self._legendTitleFont.qFont())
+		self._legend.setStyleFont(QgsLegendStyle.Symbol, self._legendSymbolFont.qFont())
+		self._legend.setStyleFont(QgsLegendStyle.SymbolLabel, self._legendLabelFont.qFont())
+		self._legend.attemptMove(QgsLayoutPoint(256.000, 159.600, QgsUnitTypes.LayoutMillimeters)) 	# 258.603, 168.270, 37.400, 37.700
+		self._legend.adjustBoxSize()
+		self._statusPrintLayout.addItem(self._legend)
+
+		barfd("GisWriter._ProjectAddPrintLayout.Exit()")
 		
 		return True
 		
 	def _CreateProject(self):
+		barfd("GisWriter._CreateProject.Enter()")
 		self._NewGisProject()
 		self._LoadKmlLayer()
 		self._LayerSetLabeling()
 		self._LayerSetCategories()
 		self._ProjectAddPrintLayout()
+		barfd("GisWriter._CreateProject.Exit()")
 		return True
 
 	def _GuiRefresh(self):
-		if self._USE_GUI:
-			if iface.mapCanvas().isCachingEnabled():
-				self._statusLayer.triggerRepaint()
-			else:
-				iface.mapCanvas().refresh()	
+		#if self._USE_GUI:
+		#	if iface.mapCanvas().isCachingEnabled():
+		#		self._statusLayer.triggerRepaint()
+		#	else:
+		#		iface.mapCanvas().refresh()	
 		return True
 
 	#
 	# Methods (public)
 	#  
 	def GenerateProject(self):															# Create GIS project from Status KML
-		barfd("GisWriter.GenerateProject()")
+		barfd("GisWriter.GenerateProject.Enter()")
 		status_project = AppSettings.glob().gisProjectSpec()
 		self._CreateProject()
 		self._GuiRefresh()
+		barfd("GisWriter.GenerateProject.Exit()")
 		return True
 		
 	def SaveProject(self):																# Save GIS project
+		barfd("GisWriter.GenerateProject.Enter()")
 		self._project.write(AppSettings.glob().gisProjectSpec())
+		barfd("GisWriter.GenerateProject.Exit()")
 		return True
 
-	def GeneratePDF(self):																# Barf to PDF
-		barfd("GisWriter.GeneratePdf()")
+	def GeneratePdf(self):																# Barf to PDF
+		barfd("GisWriter.GeneratePdf.Enter()")
 		status_pdf = AppSettings.glob().gisPdfSpec()
 		exporter = QgsLayoutExporter(self._statusPrintLayout)
 		exporter.exportToPdf(status_pdf, QgsLayoutExporter.PdfExportSettings())
-		print("Exported to PDF. File=\"{}\"".format(status_pdf)))
+		barf("Exported to PDF. File=\"{}\"".format(status_pdf))
+		barfd("GisWriter.GeneratePdf.Exit()")
 		return True
 	
 	def GenerateImage(self):															# Barf to JPG Image
-		barfd("GisWriter.GenerateImage()")
+		barfd("GisWriter.GenerateImage.Enter()")
+		
 		statusImage = AppSettings.glob().gisImageSpec()
 		exporter = QgsLayoutExporter(self._statusPrintLayout)
 		settings = QgsLayoutExporter.ImageExportSettings()
 		settings.dpi      = 300
 		exporter.exportToImage(statusImage, settings)
-		print("Exported to JPG. File=\"{}\"".format(statusImage))
+		barf("Exported to JPG. File=\"{}\"".format(statusImage))
+		
+		barfd("GisWriter.GenerateImage.Exit()")
 		return True
 		
 	def	Cleanup(self):
-		if self._HEADLESS: qgs.exitQgis()												# remove provider and layer registries from memory
+		barfd("GisWriter.Cleanup.Enter()")
+		#if self._HEADLESS: self._qgisEngine.exitQgis()									# remove provider and layer registries from memory
+		self._qgisEngine.exitQgis()														# remove provider and layer registries from memory
+		self._statusLayer		= None													# Project KML Vector Layer object
+		self._project			= None													# GIS Project object
+		self._qgisEngine		= None													# QGIS Engine
+		self._statusRenderer	= None													# Renderer for categories
+		self._statusCategories	= None													# Categories for renderer
+		self._statusPrintLayout	= None													# Print layout object for project
+		self._statusMap			= None													# Map for print layout
+		self._logoPicture		= None													# Logo picture object for print layout
+		self._statusDateLabel	= None													# Date label for print layout
+		self._titleLabel		= None													# Title label for print layout
+		self._legend			= None													# Legend for print layout
+		self._layerTree			= None													# Layer tree for legend
+		self._reportTitleFont	= None													# Report Title
+		self._reportDateFont	= None													# Report Date Font
+		self._legendTitleFont	= None													# Legend Title Font
+		self._legendSymbolFont	= None													# Legend Symbols Font
+		self._legendLabelFont	= None													# Legend Labels Font
+		self._labelingFont		= None													# Labeling Font (Counties)
+		barfd("GisWriter.Cleanup.Exit()")
 		return True
 
 	#

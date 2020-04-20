@@ -58,8 +58,6 @@ if "%MHGGIS_APPALIAS%"=="" (
 
 python "%MHGGIS_ROOT%\covidFetch\mhgCovidDataFetch.py" %*
 
-echo mhgCovidFetch::MHGGIS_FILTER_DATE=%MHGGIS_FILTER_DATE%
-
 set MHGGIS_APPALIAS=
 
 exit /B %ERRORLEVEL%

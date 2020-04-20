@@ -101,8 +101,6 @@ class mhgFetchCommandArgs(_commandArgs):
 	
 		success = False
 
-		print("Alias var={}".format(self._ENV_APP_ALIAS))
-
 		appAlias = os.environ.get(self._ENV_APP_ALIAS)									# See app alias is set. If so, use that for program name
 		programName = _PROGRAM_NAME
 		if not appAlias is None: programName = appAlias
@@ -143,7 +141,7 @@ class mhgFetchCommandArgs(_commandArgs):
 		self._argsNamespace = parser.parse_args()
 		self._argsHash = vars(self._argsNamespace)
 
-		print ("ARGS:{}".format(self._argsNamespace))
+		#print ("ARGS:{}".format(self._argsNamespace))
 
 		# Post-parsing validation
 		

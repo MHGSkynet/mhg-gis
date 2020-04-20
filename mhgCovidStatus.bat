@@ -47,10 +47,7 @@ set MHGGIS_APPALIAS=mhgCovidStatus.bat
 
 call "%MHGGIS_ROOT%\covidFetch\mhgCovidFetch.bat" %*
 
-echo mhgCovidStatus::MHGGIS_FILTER_DATE=%MHGGIS_FILTER_DATE%
-
 set MHGGIS_APPALIAS=
-
 
 if %ERRORLEVEL% == 0 (
 	call "%MHGGIS_ROOT%\covidReport\mhgCovidReport.bat" XMIT

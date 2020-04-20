@@ -18,7 +18,7 @@
 # ---------------------------------------------------------------------------------------------
 
 # MHGLIB includes
-include mhgRegion
+from mhgRegion		import Region
 
 class MichiganInfo(object):
 

@@ -1,4 +1,4 @@
-#                                                                     _,'/
+	#                                                                     _,'/
 # --------------------------------------------------             _.-''._:      ----------------
 # mhgAppEnvironment.py                                  ,-:`-.-'    .:.|
 #                                                       ;-.''       .::.|
@@ -30,22 +30,27 @@
 # 2020.04.06	01.03		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import os
 import os.path
 import re
 import sys
-from pathlib import Path
-from datetime import datetime
+from pathlib		import Path
+from datetime		import datetime
 
-from mhgException import EnvironmentError
-import mhgUtility
+# MHGLIB includes
+from mhgException	import EnvironmentError
+#from mhgUtility		import *
 
 #
-# Application Environment Info Class
+# Application Environment Information Class
 #
 class AppEnvironment:
 	
-	# Environment Constants (private)
+	#
+	# Constants (private)
+	#
+	_ENV_QGIS_ROOT			= 'MHGGIS_QGIS_ROOT'						# QGIS Package root folder environment var
 	_ENV_PACKAGE_FOLDER		= 'MHGGIS_ROOT'								# MHGGIS Package root folder environment var
 	_ROOT_KEY_FOLDERS		= [ 'data', 'kml', 'output', 'images' ]		# MHGGIS Package folders for verification of install
 
@@ -59,11 +64,9 @@ class AppEnvironment:
 	#  Methods (public)
 	#
 
-	#
 	# Package Info
-	#
-	def GetPackageRoot():												# Get package root folder
-		packageRoot = os.environ.get(ENV_PACKAGE_FOLDER)				# See if root folder is defined
+	def GetPackageRoot():													# Get package root folder
+		packageRoot = os.environ.get(AppEnvironment._ENV_PACKAGE_FOLDER)	# See if root folder is defined
 		errorText 	= ''
 		errorText2 	= ''
 		if packageRoot is None:
@@ -73,14 +76,14 @@ class AppEnvironment:
 			packageRoot = packageRoot.replace("\\","/")
 			packagePath = Path(packageRoot)
 			if not packagePath.is_dir():
-				errorText = "ERROR: {} environment var is not a valid folder".format(ENV_PACKAGE_FOLDER)
+				errorText = "ERROR: {} environment var is not a valid folder".format(AppEnvironment._ENV_PACKAGE_FOLDER)
 			else:
-				errorText2 = "ERROR: {} environment var does not point to package root".format(ENV_PACKAGE_FOLDER)
+				errorText2 = "ERROR: {} environment var does not point to package root".format(AppEnvironment._ENV_PACKAGE_FOLDER)
 		
 		if packageRoot[-1:] != '/':		packageRoot = packageRoot + '/'
 
 		if errorText == '':
-			for packageFolder in ROOT_KEY_FOLDERS:
+			for packageFolder in AppEnvironment._ROOT_KEY_FOLDERS:
 				keyFolderSpec = packageRoot + packageFolder
 				keyFolderPath = Path(keyFolderSpec)
 				if not keyFolderPath.is_dir():
@@ -93,13 +96,11 @@ class AppEnvironment:
 
 		return packageRoot
 
-	#
 	# QGIS Package Root
-	#
 	def GetQgisRoot():													# Get QGIS package root from environment variable
-		rootFolder = os.environ.get(ENV_QGIS_ROOT)
-		if rootFolder is None: appExit(1,"ERROR: required environment variable {} is not set".format(ENV_QGIS_ROOT))
+		rootFolder = os.environ.get(AppEnvironment._ENV_QGIS_ROOT)
+		if rootFolder is None: appExit(1,"ERROR: required environment variable {} is not set".format(AppEnvironment._ENV_QGIS_ROOT))
+		rootFolder = rootFolder.replace("\\","/")
 		rootPath = Path(rootFolder)
-		if not rootPath.is_dir(): appExit(2,errorText = "ERROR: Folder {} does not exist. Fix {} environment variable.".format(packageFolder,ENV_QGIS_ROOT))
-		barfd("QGIS FOLDER={}".format(rootFolder))
+		if not rootPath.is_dir(): appExit(2,errorText = "ERROR: Folder {} does not exist. Fix {} environment variable.".format(packageFolder,AppEnvironment._ENV_QGIS_ROOT))
 		return rootFolder

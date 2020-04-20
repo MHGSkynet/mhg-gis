@@ -1,12 +1,26 @@
 #
-# ---------------------------------------------------------------------------------------------
-# mhgObservationStats.py
-#
-# Description
-#
-# 	Base class for managing statistics
-#
-# Copyright
+# -------------------------------------------------------------------------------------------------------
+# mhgObservationStats.py                IIIIMWMWMWMWMWMWMWMWMWMWMWMWMWMttii:        .           .
+#                                 IIYVVXMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWxx...         .           .
+# Description                  IWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMx..
+#                             IWMWMWMWMWMWMWMWMWMW%MHG%SKYNET%MWMWMWMWMWMWMWMWMWMWMWMWMWMx..        .
+#   Base class for managing   ""MWMWMWMWMWM"""""""".  .:..   ."""""MWMWMWMWMWMWMWMWMWMWMWMWMWti.
+#   observation data             ""   . `  .: . :. : .  . :.  .  . . .  """"MWMWMWMWMWMWMWMWMWMWMWMWMti=
+#                                 . .   :` . :   .  .'.' '....xxxxx...,'. '   ' ."""YWMWMWMWMWMWMWMWMWMW+
+#                              ; . ` .  . : . .' :  . ..XXXXXXXXXXXXXXXXXXXXx.    `     . "YWMWMWMWMWMWMW
+#                              .  .  .    . .   .  ..XXXXXXXXWWWWWWWWWWWWWWWWXXXX.  .     .     """""""
+#                                 ' :  : . : .  ...XXXXXWWW"   W88N88@888888WWWWWXX.   .   .       . .
+#                              ' .    . :   ...XXXXXXWWW"    M88N88GGGGGG888^8M "WMBX.          .   ..  :
+#                                  :     ..XXXXXXXXWWW"     M88888WWRWWWMW8oo88M   WWMX.     .    :    .
+#                                    "XXXXXXXXXXXXWW"       WN8888WWWWW  W8@@@8M    BMBRX.         .  : :
+#                                   XXXXXXXX=MMWW":  .      W8N888WWWWWWWW88888W      XRBRXX.  .       .
+#                              ....  ""XXXXXMM::::. .        W8@889WWWWWM8@8N8W      . . :RRXx.    .
+#                                  ``...'''  MMM::.:.  .      W888N89999888@8W      . . ::::"RXV    .  :
+#                                  ..'''''      MMMm::.  .      WW888N88888WW     .  . mmMMMMMRXx
+#                               ..' .            ""MMmm .  .       WWWWWWW   . :. :,miMM"""  : ""`    .
+#                                             .       ""MMMMmm . .  .  .   ._,mMMMM"""  :  ' .  :
+#                                        .                  ""MMMMMMMMMMMMM""" .  : . '   .        .
+# Copyright                                        .     .    .                      .         .
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
 #						non profit conservative organizations and individuals to use in support
@@ -15,10 +29,16 @@
 #
 # Date			Version		Author			Description
 # 2020.04.10	02.00		SquintMHG		Rewrite as app
-# ---------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------------
+
+# Python includes
+import statistics
 
 # MHGLIB includes
-import mhgImpact
+from mhgAppSettings		import AppSettings
+from mhgDataField		import DataField
+from mhgImpact			import Impact
+from mhgUtility			import *
 
 class ObservationStats(object):
 
@@ -61,19 +81,19 @@ class ObservationStats(object):
 	_participate2M					= None
 	_checkinsHF						= None
 	_participateHF					= None
-	
+
 	_dailyCounts					= {}
 	_fieldData						= []
-	
+
 	# Constructor
-    def __init__(self):
-		pass
-		
+	def __init__(self):
+		self._SetObservationDefaults()
+
 	#
 	# Methods (private)
 	#
-	def _SetDefaults(self):
-		_appOptions = AppSettings.glob().options
+	def _SetObservationDefaults(self):
+		_appOptions = AppSettings.glob().options()
 		self._statusStartDate		= DataField(self.STAT_STATUS_START_DATE,	DataField.DTYPE_DATE,		'IntelStartDate',		_appOptions.startDate())
 		self._statusEndDate			= DataField(self.STAT_STATUS_END_DATE,		DataField.DTYPE_DATE,		'IntelEndDate',			_appOptions.endDate())
 		self._observeDays			= DataField(self.STAT_OBSERVE_NDAYS,		DataField.DTYPE_NUMERIC,	'ObserveDays',			0)
@@ -86,104 +106,143 @@ class ObservationStats(object):
 		self._checkinsHF			= DataField(self.STAT_HF_CHECKINS,			DataField.DTYPE_NUMERIC,	'HFCheckins',			0)
 		self._participateHF			= DataField(self.STAT_HF_PARTICIPATE,		DataField.DTYPE_NUMERIC,	'HFParticipate',		0)
 		dailyCounts					= {}
-		
-	def _SetFieldData(self):													# Create list of DataField items from properties. (archetype)
-		pass
-	
-	#
-	# Methods (private)
-	#
 
+	def _SetFieldData(self):													# Create list of DataField items from properties. (archetype)
+		barft("ObservationStats._SetFieldData.enter()")
+		self._fieldData = []
+		self._fieldData.append(self._statusStartDate)
+		self._fieldData.append(self._statusEndDate)
+		self._fieldData.append(self._observeDays)
+		self._fieldData.append(self._observeCount)
+		self._fieldData.append(self._utilityWeight)
+		self._fieldData.append(self._servicesWeight)
+		self._fieldData.append(self._consumablesWeight)
+		self._fieldData.append(self._checkins2M)
+		self._fieldData.append(self._participate2M)
+		self._fieldData.append(self._checkinsHF)
+		self._fieldData.append(self._participateHF)
+		self._fieldData.append(self.utilitiesScore())							
+		self._fieldData.append(self.servicesScore())
+		self._fieldData.append(self.consumablesScore())		
+		self._fieldData.append(self.overallScore())		
+		self._fieldData.append(self.maxScore())		
+		self._fieldData.append(self.utilitiesCode())							
+		self._fieldData.append(self.servicesCode())
+		self._fieldData.append(self.consumablesCode())		
+		self._fieldData.append(self.overallCode())		
+		self._fieldData.append(self.maxCode())		
+		barft("ObservationStats._SetFieldData.exit()")
+		return True
+
+	def _dataFieldsDumpsText(self):
+		dumpText = ""
+		for field in self._fieldData:
+			dumpText += "{}={},".format(field.fieldId(),field.value())
+		return dumpText
 	#
 	# Methods (public)
 	#
 	def FieldFromId(self,fieldIdentifier):
+		barft("ObservationStats.FieldFromId.enter(id={})".format(fieldIdentifier))
 		statusField = None
-		for field in self.dataFields()
-			if field.fieldId() == fieldIdentifier: statusField = field
-			break
-
+		for field in self.dataFields():
+			if field.fieldId() == fieldIdentifier:
+				statusField = field
+				break
+		fieldText = "None"
+		if not statusField is None: fieldText = statusField.value()
+		barft("ObservationStats.FieldFromId.fields({})".format(self._dataFieldsDumpsText()))
+		barft("ObservationStats.FieldFromId.exit(fieldct={},value={})".format(len(self._fieldData),fieldText))
 		return statusField
 
 	#
 	# Property Getters (public)
 	#
-	def startDate(self):
-		return self._statusStartDate
-		
-	def endDate(self):
-		return self._statusEndDate
-		
-	def observationDays(self):
-		return self._statusNDays
-		
-	def observationCount(self):
-		return self._statusReportCount
-		
-	def utilityWeight(self):
-		return self._utilityWeight
-		
-	def servicesWeight(self):
-		return self._servicesWeight
-		
-	def consumablesWeight(self):
-		return self._consumablesWeight
-		
-	def checkins2M(self):
-		return self._checkins2M
-		
-	def participate2M(self):
-		return self._participate2M
-		
-	def checkinsHF(self):
-		return self._checkinsHF
-		
-	def participateHF(self):
-		return self._participateHF
-
 	def dataFields(self):
 		self._SetFieldData()
 		return self._fieldData
+
+	
+	def startDate(self):
+		return self._statusStartDate
+
+	def endDate(self):
+		return self._statusEndDate
+
+	def observationDays(self):
+		return self._observeDays
+
+	def observationCount(self):
+		return self._observeCount
+
+	def utilityWeight(self):
+		return self._utilityWeight
+
+	def servicesWeight(self):
+		return self._servicesWeight
+
+	def consumablesWeight(self):
+		return self._consumablesWeight
+
+	def checkins2M(self):
+		return self._checkins2M
+
+	def participate2M(self):
+		return self._participate2M
+
+	def checkinsHF(self):
+		return self._checkinsHF
+
+	def participateHF(self):
+		return self._participateHF
 
 	#
 	# Property Getters, Calculated (public)
 	#
 	def utilitiesScore(self):
-		score = impactScore(self._utilityWeight.value(),self._statusReportCount.value()) 
+		score = Impact.EvalScore(self._utilityWeight.value(),self._observeCount.value()) 
 		return DataField(self.STAT_UTILITIES_SCORE,		DataField.DTYPE_NUMERIC,	'UtilitiesScore',	score)
-		
+
 	def servicesScore(self):
-		score = impactScore(self._servicesWeight.value(),self._statusReportCount.value()) 
+		score = Impact.EvalScore(self._servicesWeight.value(),self._observeCount.value()) 
 		return DataField(self.STAT_SERVICES_SCORE,		DataField.DTYPE_NUMERIC,	'ServicesScore',	score)
-		
+
 	def consumablesScore(self):
-		score = impactScore(self._consumablesWeight.value(),self._statusReportCount.value()) 
+		score = Impact.EvalScore(self._consumablesWeight.value(),self._observeCount.value()) 
 		return DataField(self.STAT_CONSUMABLES_SCORE,	DataField.DTYPE_NUMERIC,	'ConsumablesScore', score)
-		
+
 	def overallScore(self):
-		score = int( (sum(self.utilitiesScore().value(),self.servicesScore().value(),self.consumablesScore().value()) / self._observeCount) + 0.7)
+		score = int( statistics.mean([self.utilitiesScore().value(), \
+										self.servicesScore().value(), \
+										self.consumablesScore().value()] ) + 0.5 )
 		return DataField(self.STAT_OVERALL_SCORE,		DataField.DTYPE_NUMERIC,	'OverallScore',		score)
 
 	def maxScore(self):
+		barfd("ObservationStats.maxScore.enter()")
+		barfd("utilitiesScore={}".format(self.utilitiesScore().value()))
+		barfd("servicesScore={}".format(self.servicesScore().value()))
+		barfd("consumablesScore={}".format(self.consumablesScore().value()))
 		score = max(self.utilitiesScore().value(),self.servicesScore().value(),self.consumablesScore().value())
+		barfd("ObservationStats.maxScore.exit()")
 		return DataField(self.STAT_MAX_SCORE,			DataField.DTYPE_NUMERIC,	'MaxScore',			score)
 
 	def utilitiesCode(self):
-		impactCode = impactCodeFromScore(self.utilitiesScore())
+		impactCode = Impact.CodeFromScore(self.utilitiesScore().value())
 		return DataField(self.STAT_UTILITIES_CODE,		DataField.DTYPE_NUMERIC,	'UtilitiesCode',	impactCode)
 
 	def servicesCode(self):
-		impactCode = impactCodeFromScore(self.servicesScore())
+		impactCode = Impact.CodeFromScore(self.servicesScore().value())
 		return DataField(self.STAT_SERVICES_CODE,		DataField.DTYPE_NUMERIC,	'ServicesCode',		impactCode)
 
 	def consumablesCode(self):
-		impactCode = impactCodeFromScore(self.consumablesScore())
+		impactCode = Impact.CodeFromScore(self.consumablesScore().value())
 		return DataField(self.STAT_CONSUMABLES_CODE,	DataField.DTYPE_NUMERIC,	'ConsumablesCode',	impactCode)
 
 	def overallCode(self):
-		impactCode = impactCodeFromScore(self.overallScore())
-		return DataField(self.STAT_CONSUMABLES_CODE,	DataField.DTYPE_NUMERIC,	'OverallCode',		impactCode)
+		impactCode = Impact.CodeFromScore(self.overallScore().value())
+		return DataField(self.STAT_OVERALL_CODE,		DataField.DTYPE_NUMERIC,	'OverallCode',		impactCode)
 
 	def maxCode(self):
-		impactCode = impactCodeFromScore(self.maxScore())
-		return DataField(self.STAT_CONSUMABLES_CODE,	DataField.DTYPE_NUMERIC,	'MaxCode',			impactCode)		
+		mscore=self.maxScore().value()
+		impactCode = Impact.CodeFromScore(self.maxScore().value())
+		return DataField(self.STAT_MAX_CODE,			DataField.DTYPE_NUMERIC,	'MaxCode',			impactCode)		

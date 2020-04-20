@@ -27,9 +27,11 @@
 
 if "%MHGGIS_ROOT%"=="" (
 	echo "ERROR MHGGIS_ROOT environment variable not defined. Run mhgCovidEnv.bat"
-	exit 1
+	exit /B 1
 )
 
 set MHGGIS_REPORT_FOLDER=%MHGGIS_ROOT%\covidReport
 
 "%MHGGIS_REPORT_FOLDER%\python-qgis-headless.bat" "%MHGGIS_REPORT_FOLDER%\mhgCovidReport.py" %*
+
+::"%MHGGIS_REPORT_FOLDER%\python-qgis-headless.bat" "%MHGGIS_ROOT%\covidStatus\mhgCovidStatus.py" --start=2020.03.28 --debug

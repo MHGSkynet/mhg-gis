@@ -70,12 +70,17 @@ set VSI_CACHE_SIZE=1000000
 ::  Let python know about QGIS libraries
 ::
 set PYTHONPATH=%OSGEO4W_ROOT%\apps\qgis-ltr\python;%PYTHONPATH%
+set PYTHONPATH=%PYTHONPATH%;C:\Users\booger\AppData\Local\Programs\Python\Python38-32\Lib\site-packages
 
 ::
 ::  Python Installation (the one that came with QGIS)
 ::
 set PYTHONBIN=%OSGEO4W_ROOT%\apps\Python37
 set PYTHONEXE=%PYTHONBIN%\python
+
+::echo PYTHONPATH=%PYTHONPATH%
+::echo PYTHONHOME=%PYTHONHOME%
+::echo PATH=%PATH%
 
 ::
 ::  Run script

@@ -23,9 +23,10 @@
 import sys
 
 # MHGLIB includes
-import mhgCommandArgs
-import mhgCsvWriter
-import mhgUtiliy
+from mhgAppCommandArgs	import AppCommandArgs
+from mhgCsvWriter		import CsvWriter
+from mhgDataField		import DataField
+from mhgUtility			import *
 
 class SummaryWriter(CsvWriter):												# Summary CSV Writer class
 
@@ -43,9 +44,9 @@ class SummaryWriter(CsvWriter):												# Summary CSV Writer class
 	def Open(self,stats):													# Open Summary CSV for output
 		success = False
 		if self._fhCsv is None:
-			self.SetFilespec( AppSettings.glob().summaryCsvTemplate.replace(AppSettings.TEMPLATE_DATE_TOKEN,AppSettings.glob().options().endDate()) )
+			self.SetFileSpec( AppSettings.glob().summaryCsvSpec() )
 			barfd("SummaryWriter.Open(file={})".format(self._fhCsv))
-			self._fhCsv = open(self._fhCsv, 'w')
+			self._fhCsv = open(self.fileSpec(), 'w')
 			if self._fhCsv is None:
 				raise EnvironmentError("Can't open output Summary CSV ({})".format(self.fileSpec()))
 			self.WriteHeader(stats)
@@ -57,8 +58,8 @@ class SummaryWriter(CsvWriter):												# Summary CSV Writer class
 		barfd("SummaryWriter.WriteHeader()")
 		csvLine = ''
 		for field in stats.dataFields():
-			csvLine += self._csvText(field.headerText(), field.dataType())
-		
+			csvLine += self._csvText(field.headerText(), DataField.DTYPE_TEXT)
+
 		self.Write(csvLine)
 		return True
 
@@ -66,11 +67,11 @@ class SummaryWriter(CsvWriter):												# Summary CSV Writer class
 		self.Open(stats)
 		csvLine = ''
 		for field in stats.dataFields():
-			csvLine += csvText(field.value(), field.dataType())
-	
+			csvLine += self._csvText(field.value(), field.dataType())
+
 	def WriteStateCountyStats(self,stateData):								# Dump everything in a hash of CountyStats to Summary CSV
 		success = True
-		
+
 		barfd("SummaryWriter.WriteStateCountyStats()")
 		barfi("Summary data generating ...")
 
@@ -78,8 +79,8 @@ class SummaryWriter(CsvWriter):												# Summary CSV Writer class
 			countyStats	= stateData.countyData(countyName)
 			self.WriteCountyStats(countyStats)
 
-		summaryCsvClose()
-		
+		self.Close()
+
 		barfi("Summary data complete. Stats recorded for {} counties.".format(len(stateData.countyList())))
 
 		return success

@@ -4,21 +4,7 @@
 #
 # Description
 #
-#   Set of tools to produce a status graphic for Covid Impact tracking
-#
-#     o mhgCovidStatus  runs covidFetch and covidReport
-#
-#     o mhgCovidFetch   pulls data from a Google spreadsheet for a given date,
-#                           stores to local CSV, compiles statistics by county and writes
-#                           stats to local CSV and merges stats into KML for presentation.
-#                       creates (2) kml files. One in data folder as input to covidReport, 
-#                           and an identical one in the output folder with current date added
-#                           to file name.
-#
-#     o mhgCovidReport  take generated KML and construct a QGIS project and save. Render as a
-#                           graphic and save to JPG and PDF formats.
-#
-#     o mhgCovidEnv     sets package environment variables
+#   Application to produce a status graphic for Covid Impact tracking
 #
 # Requirements:
 #
@@ -52,6 +38,7 @@
 #           --ndays [NDAYS]  Number of days from begin date to select data by
 #           --nodetail       Disables capture of detail to daily CSV files
 #           --nosummary      Disables generation of summary info CSV file
+#           --info           Whether to barf verbose info
 #           --debug          Whether to barf debug info
 # 
 #       Note:

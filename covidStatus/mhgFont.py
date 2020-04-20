@@ -35,12 +35,12 @@
 import copy
 
 # QGIS includes
-from PyQt5.QtGui  import QColor
-from PyQt5.QtGui  import QFont
+from PyQt5.QtGui	import QColor
+from PyQt5.QtGui	import QFont
 
 # MHGLIB includes
-import mhgColors
-import mhgUtiliy
+from mhgColors		import Colors
+from mhgUtility		import *
 
 class Font():
 
@@ -60,15 +60,15 @@ class Font():
 	FONT_WEIGHT_EXTRABOLD	= "ExtraBold"
 	FONT_WEIGHT_BLACK		= "Black"
 	
-	_QFONT_WEIGHT_MAP		= { FONT_WEIGHT_NORMAL		= QFont.Thin,
-								FONT_WEIGHT_EXTRALIGHT	= QFont.ExtraLight,
-								FONT_WEIGHT_LIGHT		= QFont.Light,
-								FONT_WEIGHT_NORMAL		= QFont.Normal,
-								FONT_WEIGHT_MERIUM		= QFont.Medium,
-								FONT_WEIGHT_DEMIBOLD	= QFont.DemiBold,
-								FONT_WEIGHT_BOLD		= QFont.Bold,
-								FONT_WEIGHT_EXTRABOLD	= QFont.ExtraBold,
-								FONT_WEIGHT_BLACK		= QFont.Black	}
+	_QFONT_WEIGHT_MAP		= { FONT_WEIGHT_NORMAL:		QFont.Thin,
+								FONT_WEIGHT_EXTRALIGHT:	QFont.ExtraLight,
+								FONT_WEIGHT_LIGHT:		QFont.Light,
+								FONT_WEIGHT_NORMAL:		QFont.Normal,
+								FONT_WEIGHT_MERIUM:		QFont.Medium,
+								FONT_WEIGHT_DEMIBOLD:	QFont.DemiBold,
+								FONT_WEIGHT_BOLD:		QFont.Bold,
+								FONT_WEIGHT_EXTRABOLD:	QFont.ExtraBold,
+								FONT_WEIGHT_BLACK:		QFont.Black	}
 					
 	#
 	# Constants (private)
@@ -87,7 +87,7 @@ class Font():
 	_fontWeight			= None
 	
 	# Constructor
-	def __init__(self,fontName=_DEFAULT_FONT_NAME,fontSize=_DEFAULT_FONT_SIZE,fontColor=_DEFAULT_FONT_COLOR,fontWEIGHT=_DEFAULT_FONT_WEIGHT):
+	def __init__(self,fontName=_DEFAULT_FONT_NAME,fontSize=_DEFAULT_FONT_SIZE,fontColor=_DEFAULT_FONT_COLOR,fontWeight=_DEFAULT_FONT_WEIGHT):
 		self._fontName		= fontName
 		self._fontSize		= fontSize
 		self._fontColor		= fontColor
@@ -115,7 +115,7 @@ class Font():
 		return QColor(self.fontColor())
 
 	def qFontWeight(self):
-		return copy.deepcopy(self._QFONT_WEIGHT_MAP[weightname])
+		return copy.deepcopy(self._QFONT_WEIGHT_MAP[self._fontWeight])
 	
 	def qFont(self):
 		return QFont(self.fontName(), self.fontSize(), self.qFontWeight())

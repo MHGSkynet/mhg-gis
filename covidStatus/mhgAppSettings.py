@@ -26,65 +26,56 @@
 # 2020.04.06	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import copy
 import sys
+from datetime			import datetime
 
-import mhgAppEnvironment
-import mhgCommandArgs
-import mhgException
-import mhgUtility
+# MHGLIB includes
+from mhgAppCommandArgs	import AppCommandArgs
+from mhgAppConstants	import AppConstants
+from mhgAppEnvironment	import AppEnvironment
+from mhgException		import *
 
 #
 # Application Settings class
 #
-class AppSettings(object):										# Application Settings Class
-
-	# Constants (public)
-	PROGNM					= "mhgCovidStatus"					# Application program name
-	FORMAT_YMD				= "%Y.%m.%d"						# date format YYYY.MM.DD
-	TEMPLATE_DATE_TOKEN		= "YMD"								# Token for search/replace of date in file name templates
-
-	# Constants (private)
+class AppSettings(AppConstants):								# Application Settings Class
 
 	# Properties (private)
-    _instance 				= None								# Class singleton object holder
+	_instance 				= None								# Class singleton object holder
 	_appOptions				= None								# Parsed Command Options Object
-	
+
 	_package_root			= None								# MHGGIS Package root folder for mgh-gis suite
 	_app_folder				= None								# Application folder
 	_data_folder			= None								# Data folder
 	_kml_folder				= None								# Kml folder
 	_output_folder			= None								# Output folder
 	_images_folder			= None								# Images folder
-	
+
 	_qgis_root				= None								# QGIS Root folder
 	_qgis_bin_folder		= None								# QGIS Apps folder
 	_qgis_python_folder		= None								# QGIS Python folder
 
-	_currTimestamp			= None 								# current date and time (timestamp)
-	_currDateYmd			= None 								# current date YYYY.MM.DD (text)
-	_currDateTS				= None								# current date (timestamp)
-	
-
-    def __init__(self):
-        raise RuntimeError('Call glob() instead')
+	def __init__(self):
+		raise RuntimeError('Call glob() instead')
 
 	#
 	#  Constructor (singleton)
 	#
+	@classmethod
 	def glob(cls):												# Global (singleton) class reference
 
-        # For first instance of class, initialize data
+		# For first instance of class, initialize data
 		if cls._instance is None:
-            barfd('Creating new AppSettings instance')
-            cls._instance = cls.__new__(cls)
-			
+			cls._instance = cls.__new__(cls)
+
 			# Get command arguments
-			cls._appOptions = mhgFetchCommandArgs()
-			success = cls._appOptions.getArguments()
+			cls._appOptions = AppCommandArgs()
+			success = cls._appOptions.GetArguments()
 			if not success:
 				raise CommandArgError('AppSettings::Error processing command arguments')
-				
+
 			# Get Application Environment Info
 			cls._package_root		= AppEnvironment.GetPackageRoot()												
 			cls._app_folder			= cls._package_root + 'covidStatus/'
@@ -92,18 +83,13 @@ class AppSettings(object):										# Application Settings Class
 			cls._images_folder		= cls._package_root + 'images/'
 			cls._kml_folder			= cls._package_root + 'kml/'
 			cls._output_folder		= cls._package_root + 'output/'
-			
+
 			# Get QGIS Environment Info
 			cls._qgis_root			= AppEnvironment.GetQgisRoot()
 			cls._qgis_bin_folder	= cls._qgis_root + "/apps/qgis-ltr"
-			cls._qgis_python_folder	= cls._qgis_root + "/python/plugins"
+			cls._qgis_python_folder	= cls._qgis_bin_folder + "/python/plugins"
 
-			# System date
-			cls._currTimestamp		= datetime.now() 									# current date and time (timestamp)
-			cls._currDateYmd		= cls._currTimestamp.strftime(FORMAT_YMD)			# current date YYYY.MM.DD (text)
-			cls._currDateTS			= datetime.strptime(cls._currDateYmd,FORMAT_YMD)	# current date (timestamp)
-
-        return cls._instance
+		return cls._instance
 
 
 	#
@@ -114,45 +100,45 @@ class AppSettings(object):										# Application Settings Class
 
 	def packageRoot(cls):										# Application Root Folder
 		return copy.deepcopy(cls._package_root)
-		
+
 	def qgisRoot(cls):											# QGIS Root Folder
-		return copy.deepcopy(cls._package_root)
-		
+		return copy.deepcopy(cls._qgis_root)
+
 	def qgisBinFolder(cls):										# QGIS Binaries Folder
-		return copy.deepcopy(cls._package_root)
+		return copy.deepcopy(cls._qgis_bin_folder)
 
 	def qgisPythonFolder(cls):									# QGIS Python Folder
-		return copy.deepcopy(cls._package_root)
+		return copy.deepcopy(cls._qgis_python_folder)
 
 	def appFolder(cls):											# Covid Report application folder
 		return copy.deepcopy(cls._app_folder)
-		
+
 	def dataFolder(cls):										# Data Folder (output)
 		return copy.deepcopy(cls._data_folder)
-		
+
 	def imagesFolder(cls):										# Images Folder (input)
 		return copy.deepcopy(cls._images_folder)
 
 	def kmlFolder(cls):											# KML Folder (input)
 		return copy.deepcopy(cls._kml_folder)
-		
+
 	def outputFolder(cls):										# Output Folder (output)
 		return copy.deepcopy(cls._output_folder)
+
+	
+	def covidSheetID(cls):
+		return copy.deepcopy(cls._COVID_SPREADSHEET_ID)
 		
-	def currTimestamp(cls):
-		return copy.deepcopy(cls._currTimestamp)
-		
-	def currDateYmd(cls):
-		return copy.deepcopy(cls._currDateYmd)
-		
-	def currDateTS(cls):
-		return copy.deepcopy(cls._currDateTS)
-																				#########   File specs  #############
+	def covidSheetDataRange(cls):
+		return copy.deepcopy(cls._COVID_DATA_RANGE)
+
+											#########   File specs  #############
 	def googlePickleSpec(cls):
-		return cls._app_folder + 'token.pickle'									# Google API pickle file										# GoogleGoo.Input
+		return cls._data_folder + 'token.pickle'								# Google API pickle file										# GoogleGoo.Input
 
 	def googleCredentialsSpec(cls):
-		return cls._app_folder + 'credentials.json'								# Google API credentials file									# GoogleGoo.IO
+		return cls._data_folder + 'credentials.json'							# Google API credentials file									# GoogleGoo.IO
+
 
 	def kmlStatusTemplateSpec(cls):												# Template KML of Michigan counties and MHG Covid data schema	# KmlWriter:Input
 		return cls._kml_folder + "mhgCovidStatusMichigan.kml"
@@ -168,7 +154,7 @@ class AppSettings(object):										# Application Settings Class
 
 	def mhgLogoSpec(cls):
 		return cls._images_folder + "MHG-yellow.jpg"							# MHG Logo Image file specification								# GisWriter.Input
-		
+
 	def gisProjectSpec(cls):													# Report QGIS Project file specification						# GisWriter.Output
 		return "{}mhgCovidStatus-{}.qgz".format(cls._output_folder,cls._appOptions.endDate())
 

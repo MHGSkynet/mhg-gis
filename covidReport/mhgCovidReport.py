@@ -230,7 +230,7 @@ USE_GUI				= not HEADLESS												# Run with GUI
 GENERATE_PROJECT	= True														# Whether to output a QGIS project as output
 GENERATE_PDF		= True														# Whether to output a PDF of the status
 GENERATE_IMAGE		= True														# Whether to output a JPG of the status
-DEBUG_ON			= True														# Debug enable
+DEBUG_ON			= False														# Debug enable
 
 # Environment 
 ENV_QGIS_ROOT		= "MHGGIS_QGIS_ROOT"										# QGIS package root folder environment var
@@ -308,7 +308,15 @@ def addSymbolCategory(impactCode,impactDesc,symbolColor,categoryList):
 #
 # Initialize QGIS
 #
+barfd("InitializeQgis.path={})".format('\n'.join(sys.path)))
+barfd("InitializeQgis.qgisPythonFolder={})".format(qgisPythonFolder))
+barfd("InitializeQgis.qgisBinFolder={})".format(qgisBinFolder))
 sys.path.append(qgisPythonFolder)												# Add QGIS Pytho plugins to search path
+
+barfd("####PATH#####")
+barfd("InitializeQgis.path={})".format('\n'.join(sys.path)))
+barfd("####PATH#####")
+
 QgsApplication.setPrefixPath(qgisBinFolder, True)								# Define QGIS Install point
 qgs = QgsApplication([], USE_GUI)												# Create a QGIS Application instance, HEADLESS or with GUI
 qgs.initQgis()																	# Load QGIS providers

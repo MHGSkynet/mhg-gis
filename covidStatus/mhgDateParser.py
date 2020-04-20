@@ -1,29 +1,22 @@
-#                                               ,--.
-# -----------------------------------------    {    }      ------------------------------------
-# mhgDateParse.py                              K,   }
-#                                             /  `Y`
-# Description                            _   /   /
-#                                       {_'-K.__/
-#   Date Parsing Classes and Routines     `/-.__L._
-#                                         /  ' /`\_}
-#                                        /  ' /     
-#                                ____   /  ' /
-#                         ,-'~~~~    ~~/  ' /_
-#                       ,'             ``~~~%%',
-#                      (                     %  Y
-#                     {                      %% I
-#                    {      -                 %  `.
-#                    |       ',                %  )
-#                    |        |   ,..__      __. Y
-#                    |    .,_./  Y ' / ^Y   J   )|
-#                    \           |' /   |   |   ||
-#                     \          L_/    . _ (_,.'(
-#                      \,   ,      ^^""' / |      )
-#                        \_  \          /,L]     /
-#                          '-_`-,       ` `   ./`
-#                             `-(_            )
-#                                 ^^\.._M_,N--`
-# Copyright
+#                                      
+# ---------------------------------------------------------------------------------------------------
+# mhgDateParser                                                               ^__
+#                                                             .-""""""-.     |* _)
+# Description                                                /          \   /  /
+#                                                           /            \_/  /
+#   Date Parsing Classes        _                          /|                /
+#                           _-'"/\                        / |    ____    _.-"            _
+#                        _-'   (  '-_            _       (   \  |\  /\  ||           .-'".".
+#                    _.-'       '.   `'-._   .-'"/'.      "   | |/ /  | |/        _-"   (   '-_
+#                                 '.      _-"   (   '-_       \ | /   \ |     _.-'       )     "-._
+#                               _.'   _.-'       )     "-._    ||\\   |\\  '"'        .-'
+#                             '               .-'          `'  || \\  ||))
+#                   ___ __  _  ___  _ ____________ _____  ___ _|\ _|\_|\\/ _______________  ___   _
+#                                           c  c  " c C ""C  " ""  "" ""
+#                                       c       C
+#                                  C        C                                      
+#                                       C                                          #givemeperlorgivemedeath
+# Copyright              C     c                                                   #robisgreat
 #
 #	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
 #						non profit conservative organizations and individuals to use in support
@@ -32,7 +25,7 @@
 #
 # Date			Version		Author			Description
 # 2020.04.06	01.03		SquintMHG		New Module
-# ---------------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------------------
 
 # Python includes
 from datetime import datetime
@@ -89,7 +82,7 @@ class DateParser(object):
 
 		return parseResult
 
-	def TestDatePattern(regex,parseString,strptimeFormat,strptimeString=''):			# Test a date string for pattern match, and parse to timestamp on match
+	def TestDatePattern(self,regex,parseString,strptimeFormat,strptimeString=''):		# Test a date string for pattern match, and parse to timestamp on match
 		if strptimeString == '': strptimeString = parseString
 		dateTS = None																		
 		pattern = re.compile(regex)

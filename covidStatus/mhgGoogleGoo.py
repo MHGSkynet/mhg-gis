@@ -5,7 +5,7 @@
 # Description
 #
 # 	Stuff related to working with Google APIs
-#                                            ,;,
+#                                            ,;, `
 #                                          ={;;;}=
 #              |\_/|              ,_     :"{:;X;:}":        (\_/)
 #             / @ @ \            >' )     .   H    .       (='.'=)
@@ -26,20 +26,20 @@
 # ---------------------------------------------------------------------------------------------
 
 # Python includes
-from __future__ import print_function
+from __future__			import print_function
 import os
 import os.path
-from pathlib import Path
+from pathlib			import Path
 
 # Google includes
 import pickle
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
+from googleapiclient.discovery 		import build
+from google_auth_oauthlib.flow		import InstalledAppFlow
+from google.auth.transport.requests	import Request
 
 # MHGLIB Includes
-import mhgAppSettings
-import mhgUtility
+from mhgAppSettings		import AppSettings
+from mhgUtility			import *
 
 #
 #  GoogleGoo    Google Service Connection Class
@@ -47,10 +47,10 @@ import mhgUtility
 class GoogleGoo:
 
 	# Connection Constants (private)
-	_SCOPES 						= ['https://www.googleapis.com/auth/spreadsheets.readonly']		# If modifying scope(s), delete the file token.pickle.
+	_SCOPES 					= ['https://www.googleapis.com/auth/spreadsheets.readonly']	# If modifying scope(s), delete the file token.pickle.
 
 	# Spreadsheet data (private)
-	_service						= None														# Google sheet service object
+	_service					= None														# Google sheet service object
 
 	# Constructor
 	def __init__(self):
@@ -59,11 +59,11 @@ class GoogleGoo:
 	#
 	# Methods
 	#
-	def Login():
+	def Login(self):
 
 		# Goo Security
-		gooPickleSpec		  	= mhgAppSettings.glob().googlePickleSpec()						# Google API pickle file
-		gooCredentialsSpec		= mhgAppSettings.glob().googleCredentials()						# Google API credentials file
+		gooPickleSpec		  	= AppSettings.glob().googlePickleSpec()						# Google API pickle file
+		gooCredentialsSpec		= AppSettings.glob().googleCredentialsSpec()				# Google API credentials file
 
 		# Security File Specs
 
@@ -80,7 +80,7 @@ class GoogleGoo:
 			if creds and creds.expired and creds.refresh_token:
 				creds.refresh(Request())
 			else:
-				flow = InstalledAppFlow.from_client_secrets_file(gooCredentialsSpec, SCOPES)
+				flow = InstalledAppFlow.from_client_secrets_file(gooCredentialsSpec, GoogleGoo._SCOPES)
 				creds = flow.run_local_server(port=0)
 			# Save the credentials for the next run
 			with open(gooPickleSpec, 'wb') as token:

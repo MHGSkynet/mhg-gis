@@ -28,26 +28,22 @@
 # 2020.04.05	02.00		SquintMHG		New Module
 # ---------------------------------------------------------------------------------------------
 
+# Python includes
 import argparse
 import textwrap
-from textwrap import dedent
+from textwrap			import dedent
 import copy
 import os
 import os.path
 import re
 import sys
-from pathlib import Path
-from datetime import datetime
-from datetime import timedelta
+from pathlib			import Path
+from datetime			import datetime
+from datetime			import timedelta
 
-from mhgDateParse import TestDatePattern
-from mhgDateParse import DateParser
-from mhgDateParse import dateParseResult
-
-# System date
-_currTimestamp			= datetime.now() 												# current date and time (timestamp)
-_currDateYmd			= _currTimestamp.strftime("%Y.%m.%d")							# current date YYYY.MM.DD (text)
-_currDateTS				= datetime.strptime(_currDateYmd,"%Y.%m.%d")					# current date (timestamp)
+# MHGLIB includes
+from mhgAppConstants	import AppConstants
+from mhgDateParser		import DateParser
 
 #
 # COMMAND ARGUMENT PARSING
@@ -62,7 +58,7 @@ def _noSw(optName):																		# Create negated option command line switch
 class CommandOptions(object):															# Command Line options constants
 
 	# 
-	#  Command Line Option Constants
+	#  Command Line Option Constants 
 	# 
 	_OPT_CAPTURE_DETAIL		= 'detail'													# Whether to capture detail to daily CSV files.
 	_OPT_GENERATE_SUMMARY	= 'summary'													# Whether to generate daily summary info CSV file.
@@ -76,10 +72,13 @@ class CommandOptions(object):															# Command Line options constants
 
 	_OPT_INFO				= 'info'													# Info enable
 	_OPT_DEBUG				= 'debug'													# Debug enable
+	_OPT_TRACE				= 'trace'													# Trace enable
 	_OPT_ZOMBIES			= 'zombies'													# Zombies enable
+	
+	_PROGRAM_NAME			= 'mhgCovidStatus.bat'
 
 
-class _optDateAction(argparse.Action,_commandArgs):										# Argument parser action to validate a date string. returns date in yyy.mm.dd format
+class _optDateAction(argparse.Action,CommandOptions):									# Argument parser action to validate a date string. returns date in yyy.mm.dd format
 	def __init__(self, option_strings, dest, nargs=None, **kwargs):
 	#	if nargs is not None:
 	#		raise ValueError("nargs not allowed")
@@ -94,7 +93,7 @@ class _optDateAction(argparse.Action,_commandArgs):										# Argument parser a
 		if option_string == _optSw(CommandOptions._OPT_FILTER_START_DATE):
 			setattr(namespace, CommandOptions._OPT_FILTER_END_DATE, optionDateYmd)		# If setting start date, also set end date.
 
-	def _optionDate(self,dateString):															# Validate a date from command line. Parse and return in yyyy.mm.dd format
+	def _optionDate(self,dateString):													# Validate a date from command line. Parse and return in yyyy.mm.dd format
 		parseResult = DateParser().ParseDate(dateString)
 		if parseResult.isBadDate():
 			msg = "Not a valid date: '{0}'.".format(dateString)
@@ -106,7 +105,7 @@ class _optDateAction(argparse.Action,_commandArgs):										# Argument parser a
 #
 # Command Argument class for mhgFetch app
 #
-class AppCommandArgs(CommandOptions):
+class AppCommandArgs(CommandOptions,AppConstants):
 
 	# Constants (private)
 	_ENV_APP_ALIAS			= "MHGGIS_APPALIAS"											# Environment variable containing alias program name to be used
@@ -126,10 +125,8 @@ class AppCommandArgs(CommandOptions):
 	
 		success = False
 
-		print("Alias var={}".format(self._ENV_APP_ALIAS))
-
 		appAlias = os.environ.get(self._ENV_APP_ALIAS)									# See app alias is set. If so, use that for program name
-		programName = _PROGRAM_NAME
+		programName = self._PROGRAM_NAME
 		if not appAlias is None: programName = appAlias
 
 		appTitle = 'MHG Covid Data Fetch'
@@ -157,23 +154,22 @@ class AppCommandArgs(CommandOptions):
 											description="=== {} ===".format(appTitle),
 											epilog=textwrap.dedent(flawlessVictory))
 											
-		parser.add_argument(_optSw(self._OPT_FILTER_START_DATE), type=str,   nargs='?',				default=_currDateYmd,	action=_optDateAction,	help='Beginning date of range to select data by')
-		parser.add_argument(_optSw(self._OPT_FILTER_END_DATE),   type=str,   nargs='?',				default=_currDateYmd,	action=_optDateAction,	help='End date of range to select data by')
-		parser.add_argument(_optSw(self._OPT_FILTER_DAYS),       type=int,   nargs='?',				default=0,										help='Number of days from begin date to select data by')
+		parser.add_argument(_optSw(self._OPT_FILTER_START_DATE), type=str,   nargs='?',				default=self.currDateYmd(),	action=_optDateAction,	help='Beginning date of range to select data by')
+		parser.add_argument(_optSw(self._OPT_FILTER_END_DATE),   type=str,   nargs='?',				default=self.currDateYmd(),	action=_optDateAction,	help='End date of range to select data by')
+		parser.add_argument(_optSw(self._OPT_FILTER_DAYS),       type=int,   nargs='?',				default=0,										help='Number of days from and including begin date to select data by')
 		parser.add_argument(_noSw(self._OPT_CAPTURE_DETAIL),     dest=self._OPT_CAPTURE_DETAIL,		default=True, 			action='store_false',	help='Disables capture of detail to daily CSV files')
 		parser.add_argument(_noSw(self._OPT_GENERATE_SUMMARY),   dest=self._OPT_GENERATE_SUMMARY,	default=True,			action='store_true',	help='Disables generation of summary info CSV file')
 		parser.add_argument(_noSw(self._OPT_GENERATE_PROJECT),   dest=self._OPT_GENERATE_PROJECT,	default=True,			action='store_true',	help='Disables saving of GIS Project')
 		parser.add_argument(_noSw(self._OPT_GENERATE_PDF),		 dest=self._OPT_GENERATE_PDF,		default=True,			action='store_true',	help='Disables saving of PDF file')
 		parser.add_argument(_noSw(self._OPT_GENERATE_IMAGE),   	 dest=self._OPT_GENERATE_IMAGE,		default=True,			action='store_true',	help='Disables saving of JPG image')
-		parser.add_argument(_optSw(self._OPT_INFO),													default=False,			action='store_true',	help='Whether to barf info')
+		parser.add_argument(_optSw(self._OPT_INFO),													default=False,			action='store_true',	help='Whether to barf progress info')
 		parser.add_argument(_optSw(self._OPT_DEBUG),												default=False,			action='store_true',	help='Whether to barf debug info')
+		parser.add_argument(_optSw(self._OPT_TRACE),												default=False,			action='store_true',	help='Whether to barf trace info')
 		parser.add_argument(_optSw(self._OPT_ZOMBIES),												default=False,			action='store_true',	help='Whether to enable zombies')
 
 		# Parse Arguments
 		self._argsNamespace = parser.parse_args()
 		self._argsHash = vars(self._argsNamespace)
-
-		print ("ARGS:{}".format(self._argsNamespace))
 
 		# Post-parsing validation
 		
@@ -208,6 +204,12 @@ class AppCommandArgs(CommandOptions):
 			endTS   = datetime.strptime(self._argsHash[self._OPT_FILTER_END_DATE],self._FORMAT_YMD)
 			deltaTime = endTS - startTS
 			self._argsHash[self._OPT_FILTER_DAYS] = deltaTime.days + 1
+			
+		# Trace implies debug
+		#if self._argsHash[self._OPT_TRACE]:		self._argsHash[self._OPT_DEBUG] = True
+
+		# Debug implies info
+		#if self._argsHash[self._OPT_DEBUG]:		self._argsHash[self._OPT_INFO] = True
 		
 		success = True
 		return success
@@ -248,19 +250,22 @@ class AppCommandArgs(CommandOptions):
 	def generateImage(self):
 		return copy.deepcopy(self._argsHash[self._OPT_GENERATE_IMAGE])
 
+	def infoEnabled(self):
+		return self._argsHash[self._OPT_INFO] or self._argsHash[self._OPT_DEBUG]
+		
 	def debugEnabled(self):
 		return copy.deepcopy(self._argsHash[self._OPT_DEBUG])
 		
-	def infoEnabled(self):
-		return copy.deepcopy(self._argsHash[self._OPT_INFO])
-		
-	def zombiesEnabled(self)
-		return copy.deepcopy(self.__argsHash[self._OPT_ZOMBIES])
+	def traceEnabled(self):
+		return copy.deepcopy(self._argsHash[self._OPT_TRACE])
+
+	def zombiesEnabled(self):
+		return copy.deepcopy(self._argsHash[self._OPT_ZOMBIES])
 		
 	#
 	#	Methods
 	# 
 	def filterRangeText(self):
 		if self.isDateRange(): 				rangeText = "{} to {}".format(self.startDate(),self.endDate())
-		if not _appOptions.isDateRange(): 	rangeText = self.endDate()
+		if not self.isDateRange(): 			rangeText = self.endDate()
 		return rangeText

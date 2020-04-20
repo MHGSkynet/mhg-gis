@@ -28,16 +28,19 @@ from datetime import datetime
 from datetime import timedelta
 
 # MHGLIB includes
-import mhgAppSettings
+from mhgAppSettings		import AppSettings
 
 #
 # Regurgitation
 #
-def barfd(text):
-	if mhgAppSettings.glob().options().debugEnabled():	print("DEBUG: " + text)
-
 def barfi(text):
-	if mhgAppSettings.glob().options().infoEnabled():	print(text)
+	if AppSettings.glob().options().infoEnabled():	print("INFO: " + text)
+
+def barfd(text):
+	if AppSettings.glob().options().debugEnabled():	print("DEBUG: " + text)
+
+def barft(text):
+	if AppSettings.glob().options().traceEnabled():	print("TRACE: " + text)
 
 def barf(text):
 	print (text)
@@ -59,4 +62,4 @@ def coalesce(someValue,ifNullValue):													# Coalesce
 # Tests
 #
 def isBetween(testValue,rangeLow,rangeHigh):											# Test betweenness 
-	return testValue >= rangeLogw and testValue <= rangeHigh
+	return testValue >= rangeLow and testValue <= rangeHigh

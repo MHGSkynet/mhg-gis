@@ -18,6 +18,7 @@
 # ---------------------------------------------------------------------------------------------
 
 # Python includes
+import copy
 import sys
 
 class DataField(object):
@@ -36,7 +37,7 @@ class DataField(object):
 	_source_id			= None									# Field Source ID
 
 	# Constructor
-    def __init__(self,fldid=None,dtype=CsvField.DTYPE_TEXT,header="",value=None,colNo=None,srcid=None):
+	def __init__(self,fldid=None,dtype=DTYPE_TEXT,header="",value=None,colNo=None,srcid=None):
 
 		self._field_id				= fldid						# Initialize Field ID
 		self._field_dtype			= dtype						# Initialize Field data type
@@ -44,51 +45,56 @@ class DataField(object):
 		self._field_value			= value						# Initialize Field value
 		self._column_number			= colNo						# Initialize Field Column Number
 		self._source_id				= srcid						# Initialize Field Source ID
-	
 	#
 	# Methods (public)
 	#
 	def AddValue(self,value):									# Add a value to this field's value
 		self._field_value = self._field_value + value
-	
+		
 	#
 	# Property getters (public)
 	#
 	def fieldId(self):
 		return copy.deepcopy(self._field_id)
-		
+
 	def dataType(self):
 		return copy.deepcopy(self._field_dtype)
-		
+
 	def headerText(self):
 		return copy.deepcopy(self._field_header_text)
-		
+
 	def sourceId(self):
 		return copy.deepcopy(self._source_id)
-		
+
 	def columnNo(self):
 		return copy.deepcopy(self._column_number)
 
 	def value(self):
 		return copy.deepcopy(self._field_value)
-		
+	
+	#
+	# Properties (static)
+	#
+	def isEmpty(self):
+		return self._field_value is None or str(self._field_value).strip() == ""
+
 	#
 	# Property setters (public)
 	#
 	def SetFieldId(self,id):
 		self._field_id = copy.deepcopy(id)
-		
+
 	def SetDataType(self,dtype):
 		self._field_dtype = copy.deepcopy(dtype)
-		
+
 	def SetHeaderText(self,headerText):
 		self._field_header_text = copy.deepcopy(headerText)
-		
+
 	def SetSourceId(self,srcId):
 		self._source_id = copy.deepcopy(srcId)
-		
+
 	def SetColumnNo(self,colNo):
 		self._column_number = copy.deepcopy(colNo)
-	
+
 	def SetValue(self,value):
 		self._field_value = copy.deepcopy(value)

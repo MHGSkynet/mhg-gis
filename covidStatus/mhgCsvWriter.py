@@ -22,9 +22,10 @@ import copy
 import sys
 
 # MHGLIB includes
-from mhgDateParse import DateParser
-from mhgDateParse import DateParseResult
-import mhgCsvField
+from mhgCsvField	import CsvField
+from mhgDateParser	import DateParser
+from mhgDateParser	import DateParseResult
+from mhgUtility		import *
 
 class CsvWriter(object):										# Base class for CSV writing
 
@@ -34,7 +35,7 @@ class CsvWriter(object):										# Base class for CSV writing
 	_csv_field_quote	= '"'									# CSV field quote bounds character
 	_csv_file_spec		= None									# File spec of open csv
 
-    def __init__(self):
+	def __init__(self):
 		_fhCsv				= None								# Initialize File Handle for IO
 		_csv_field_sep		= ','								# Initialize CSV field separator
 		_csv_field_quote	= '"'								# Initialize CSV field quote bounds character
@@ -70,10 +71,10 @@ class CsvWriter(object):										# Base class for CSV writing
 	#
 	def fieldSep(self):
 		return copy.deepcopy(self._csv_field_sep)
-		
+
 	def fieldQuote(self):
 		return copy.deepcopy(self._csv_field_quote)
-		
+
 	def fileSpec(self):
 		return copy.deepcopy(self._csv_file_spec)
 
@@ -82,9 +83,9 @@ class CsvWriter(object):										# Base class for CSV writing
 	#
 	def SetFieldSep(self,separator):
 		self._csv_field_sep = copy.deepcopy(separator)
-	
+
 	def SetFieldQuote(self,quotechar):
 		self._csv_field_quote = copy.deepcopy(quotechar)
-		
+
 	def SetFileSpec(self,filespec):
 		self._csv_file_spec = copy.deepcopy(filespec)
