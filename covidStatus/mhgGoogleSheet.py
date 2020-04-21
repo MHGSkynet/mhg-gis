@@ -17,16 +17,17 @@
 #                                          [XXX]               ` ` ` ` `    
 # Copyright                                `"""'                 ` `  ` ` `
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
-# TODO
-#	Tool for generic spreadsheet. Class currently models a specific sheet.
-#   Add dynamic filters. Currently, only a date filter is applied
+#   Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		New module
+# TODO
+#	TODO: Tool for generic spreadsheet. Class currently models a specific sheet.
+#   TODO: Add dynamic filters. Currently, only a date filter is applied
+#
+# Date          Version     Author          Description
+# 2020.04.20    02.00       SquintMHG       New module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes

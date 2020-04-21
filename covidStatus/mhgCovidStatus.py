@@ -15,7 +15,7 @@
 #                               '                       `            _T_
 # Requirements:
 #
-#   Windows 10			
+#   Windows 10
 #   Python 3.x          https://www.python.org/downloads/
 #   pip                 Python package installer (included in Python 3.x)
 #   GooglePyAPIs        pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
@@ -62,15 +62,15 @@
 #
 # Copyright
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
+#   Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		Rewrite from script to oo app
-# 2020.04.04	01.01		SquintMHG		Fix filter date compare problem
-# 2020.03.27	01.00		SquintMHG		Initial version
+# Date          Version     Author          Description
+# 2020.04.20    02.00       SquintMHG       Rewrite from script to oo app
+# 2020.04.04    01.01       SquintMHG       Fix filter date compare problem
+# 2020.03.27    01.00       SquintMHG       Initial version
 # ---------------------------------------------------------------------------------------------
 
 # Python Imports

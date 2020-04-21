@@ -4,7 +4,7 @@
 #
 # Description
 #
-# 	Utility Routines. Various grease to get the job done. 
+#   Utility Routines. Various grease to get the job done. 
 #
 #                                  |\_______________ (_____\\______________
 #          o~=<   o~=<     HH======#H###############H#######################
@@ -13,13 +13,13 @@
 #                                                  "      }#H)
 # Copyright
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
+#   Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		New module
+# Date          Version     Author          Description
+# 2020.04.20    02.00       SquintMHG       New module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes

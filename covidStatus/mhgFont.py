@@ -4,7 +4,7 @@
 #
 # Description
 #
-# 	Font Class
+#   Font Class
 #
 #        ██╗██╗███╗░░░███╗██╗░█████╗░██╗░░██╗██╗░██████╗░░█████╗░███╗░░██╗██╗██╗██╗
 #        ╚═╝╚═╝████╗░████║██║██╔══██╗██║░░██║██║██╔════╝░██╔══██╗████╗░██║╚═╝╚═╝╚═╝
@@ -22,13 +22,13 @@
 #
 # Copyright
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
+#   Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		New Constants
+# Date          Version     Author          Description
+# 2020.04.20    02.00       SquintMHG       New Constants
 # ---------------------------------------------------------------------------------------------
 
 # Python includes

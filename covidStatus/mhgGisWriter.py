@@ -4,7 +4,7 @@
 #
 # Description
 #
-# 	Use QGIS Engine to build QGIS project and render mhgCovidStatus.kml to a PDF and/or JPG
+#   Use QGIS Engine to build QGIS project and render mhgCovidStatus.kml to a PDF and/or JPG
 #                _
 #         ______,' `._______                   _______
 #        (______(   }___,,__) .';-.;',`.;';.`=|_______)
@@ -15,15 +15,30 @@
 #   
 # Copyright
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
+#   Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		Command args, refactor for OO classes
-# 2020.04.04	01.02		SquintMHG		Change to use STATUS_MAX for county labeling, rather than STATUS_OVERALL
-# 2020.03.23	01.00		SquintMHG		Initial version
+# TODOs
+#   TODO: 001 Determine why instancing first QgsLayoutItemLabel object causes (2) "libpng warning: iCCP: known incorrect sRGB profile" warnings.
+#   TODO: 001 Suspect it has something to do with default foreground and background colors, however those get set.
+#
+#   TODO: 002 Determine why processing leaves open ssh channel to Google.
+#   TODO: 002 Err message on garbage cleanup at exit...
+#   TODO: 002     sys:1: ResourceWarning: unclosed <ssl.SSLSocket fd=916, family=AddressFamily.AF_INET,
+#   TODO: 002                                       type=SocketKind.SOCK_STREAM, proto=0,
+#   TODO: 002                                       laddr=('192.168.0.7', 50050), raddr=('172.217.9.74', 443)>
+#
+#   TODO: 003 Determine why JPG exporter tries to write metadata to a JPG image.
+#   TODO: 003 Err message on export...
+#   TODO: 003     ERROR 6: The JPEG driver does not support update access to existing datasets.
+#
+# Date          Version     Author          Description
+# 2020.04.21    02.01       SquintMHG       Misc cleanup
+# 2020.04.20    02.00       SquintMHG       Command args, refactor for OO classes
+# 2020.04.04    01.02       SquintMHG       Change to use STATUS_MAX for county labeling, rather than STATUS_OVERALL
+# 2020.03.23    01.00       SquintMHG       Initial version
 # ---------------------------------------------------------------------------------------------
 
 # Python includes
@@ -170,15 +185,10 @@ class GisWriter():
 		self._qgisEngine = QgsApplication([], False)								#    Create a QGIS Application instance, HEADLESS or with GUI
 		self._qgisEngine.initQgis()													#    Load QGIS providers
 
+		#TODO: 002
 		#import processing															#        ### WHAT SHIT AMATEUR DESIGN! These imports     ###
 		#from processing.core.Processing import Processing							#        ###     MUST occur AFTER initQgis() is called.  ###
 		#Processing.initialize()													#    Start processing
-
-		#																			#        ###TODO: Determine why processing leaves open ssh channel to Google.
-		#																			#        ###TODO: Err message on garbage cleanup at exit...
-		#																			#        ###TODO:     sys:1: ResourceWarning: unclosed <ssl.SSLSocket fd=916, family=AddressFamily.AF_INET,
-		#																			#        ###TODO:                                       type=SocketKind.SOCK_STREAM, proto=0,
-		#																			#        ###TODO:                                       laddr=('192.168.0.7', 50050), raddr=('172.217.9.74', 443)>
 
 		barfd("GisWriter._InitializeQgis.exit()")
 		return True
@@ -194,14 +204,14 @@ class GisWriter():
 	def _LoadKmlLayer(self):														# Load Status KML as a vector layer and display
 		statusKml = AppSettings.glob().statusKmlSpec()								#    Get file spec of KML to load
 		barfd("GisWriter._LoadKmlLayer.enter(statusKml={})".format(statusKml))		#
-		#if self._USE_GUI:
-		#	self._statusLayer = \
-		#		iface.addVectorLayer(statusKml, self._layerTitle, "ogr")
-		#else:
-		barfd("GisWriter._LoadKmlLayer.Load(file={})".format(statusKml))
-		self._statusLayer = QgsVectorLayer(statusKml, self._layerTitle, "ogr")
-		barfd("GisWriter._LoadKmlLayer.AddLayer()")
-		self._project.addMapLayer(self._statusLayer)
+		if self._USE_GUI:
+			self._statusLayer = \
+				iface.addVectorLayer(statusKml, self._layerTitle, "ogr")
+		else:
+			barfd("GisWriter._LoadKmlLayer.Load(file={})".format(statusKml))
+			self._statusLayer = QgsVectorLayer(statusKml, self._layerTitle, "ogr")
+			barfd("GisWriter._LoadKmlLayer.AddLayer()")
+			self._project.addMapLayer(self._statusLayer)
 
 		if not self._statusLayer.isValid():											#    If layer didn't load, hit the eject
 			raise RenderError("GisWriter.ERROR: KML layer failed to load!")			#        button.
@@ -349,7 +359,7 @@ class GisWriter():
 		self._layerTree.addLayer(self._statusLayer)
 		self._legend.model().setRootGroup(self._layerTree)
 		self._legend.setLinkedMap(self._statusMap)
-		#self._legend.setTitle("Status")
+		self._legend.setTitle("Status")
 		self._legend.setStyleFont(QgsLegendStyle.Title, self._legendTitleFont.qFont())
 		self._legend.setStyleFont(QgsLegendStyle.Symbol, self._legendSymbolFont.qFont())
 		self._legend.setStyleFont(QgsLegendStyle.SymbolLabel, self._legendLabelFont.qFont())
@@ -372,11 +382,11 @@ class GisWriter():
 		return True
 
 	def _GuiRefresh(self):
-		#if self._USE_GUI:
-		#	if iface.mapCanvas().isCachingEnabled():
-		#		self._statusLayer.triggerRepaint()
-		#	else:
-		#		iface.mapCanvas().refresh()	
+		if self._USE_GUI:
+			if iface.mapCanvas().isCachingEnabled():
+				self._statusLayer.triggerRepaint()
+			else:
+				iface.mapCanvas().refresh()	
 		return True
 
 	#
@@ -420,26 +430,7 @@ class GisWriter():
 		
 	def	Cleanup(self):
 		barfd("GisWriter.Cleanup.Enter()")
-		#if self._HEADLESS: self._qgisEngine.exitQgis()									# remove provider and layer registries from memory
 		self._qgisEngine.exitQgis()														# remove provider and layer registries from memory
-		self._statusLayer		= None													# Project KML Vector Layer object
-		self._project			= None													# GIS Project object
-		self._qgisEngine		= None													# QGIS Engine
-		self._statusRenderer	= None													# Renderer for categories
-		self._statusCategories	= None													# Categories for renderer
-		self._statusPrintLayout	= None													# Print layout object for project
-		self._statusMap			= None													# Map for print layout
-		self._logoPicture		= None													# Logo picture object for print layout
-		self._statusDateLabel	= None													# Date label for print layout
-		self._titleLabel		= None													# Title label for print layout
-		self._legend			= None													# Legend for print layout
-		self._layerTree			= None													# Layer tree for legend
-		self._reportTitleFont	= None													# Report Title
-		self._reportDateFont	= None													# Report Date Font
-		self._legendTitleFont	= None													# Legend Title Font
-		self._legendSymbolFont	= None													# Legend Symbols Font
-		self._legendLabelFont	= None													# Legend Labels Font
-		self._labelingFont		= None													# Labeling Font (Counties)
 		barfd("GisWriter.Cleanup.Exit()")
 		return True
 

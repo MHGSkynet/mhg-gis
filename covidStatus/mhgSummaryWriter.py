@@ -4,19 +4,19 @@
 #
 # Description
 #
-# 	Class for writing Summary info
+#   Class for writing Summary info
 #
 # Copyright
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
-# TODO
-#	Add error trapping on file open, type conversion issues?
+#    Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
+# TODOs
+#    TODO: Add error trapping on file open, type conversion issues?
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		New Module
+# Date          Version     Author          Description
+# 2020.04.20    02.00       SquintMHG       New Module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes

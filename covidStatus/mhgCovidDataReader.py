@@ -4,24 +4,24 @@
 #
 # Description
 #
-# 	Class to pull MHG Covid data for a given day from Google spreadsheet, save detail and
+#   Class to pull MHG Covid data for a given day from Google spreadsheet, save detail and
 #   statistics to CSV. Merge data into KML and save for daily report generation.
 #
-#	Sample Spreadsheet:
-#   	https://docs.google.com/spreadsheets/d/1ckdKCNIB-5-KSUlV2ehW3KPARVlu_CC2npjsAHrml7Q/edit?usp=sharing
+#   Sample Spreadsheet:
+#       https://docs.google.com/spreadsheets/d/1ckdKCNIB-5-KSUlV2ehW3KPARVlu_CC2npjsAHrml7Q/edit?usp=sharing
 #
 # Input Resources
-#   MHGCovidDetail.kml	Michigan KML file with 
+#   MHGCovidDetail.kml  Michigan KML file with 
 #
 # Copyright
 #
-#	Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
-#						non profit conservative organizations and individuals to use in support
-#						of American freedom and the constitution. All other rights are reserved,
-#						and any other use prohibited.
+#   Copyright (c) 2020 Kurt Schulte & Michigan Home Guard.  This software is freely available for
+#                       non profit conservative organizations and individuals to use in support
+#                       of American freedom and the constitution. All other rights are reserved,
+#                       and any other use prohibited.
 #
-# Date			Version		Author			Description
-# 2020.04.20	02.00		SquintMHG		New module
+# Date          Version     Author          Description
+# 2020.04.20    02.00       SquintMHG       New module
 # ---------------------------------------------------------------------------------------------
 
 # Python includes
